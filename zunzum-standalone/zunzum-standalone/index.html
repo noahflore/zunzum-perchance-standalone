@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>zunzum — orkut nostálgico, rede anônima anos 2000</title>
+<meta name="description" content="Zunzum é a rede social anônima com nostalgia do Orkut anos 2000: feed livre sem conta, comunidades, depoimentos e scraps, chat público e salas privadas por código. Conta só com nick e senha, sem email, grátis. Versão standalone offline (dados só neste navegador).">
+<meta name="theme-color" content="#6aa5d7">
+<link rel="icon" href="assets/logo.jpg">
+<link rel="manifest" href="src/manifest.webmanifest">
+<style>
+body{text-align:left;margin:0;font-family:Verdana,Arial,sans-serif;background:#d9e6f2}
+#top{background:#6aa5d7;color:#fff;padding:8px 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#top .top-brand{flex:1 1 auto;min-width:0}
+#top h1{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#topBtns{display:flex;gap:6px;align-items:center;flex:none;flex-wrap:wrap}
+#topBtns button{flex:none}
+#top b{font-size:20px}
+#top .meta{color:#eaf3fb;font-size:12px}
+#wrap{max-width:1100px;margin:10px auto;padding:0 10px;display:grid;grid-template-columns:230px minmax(0,1fr) 320px;gap:10px;align-items:start;box-sizing:border-box}
+#seoBox{max-width:1100px;margin:0 auto 10px;padding:0 10px;box-sizing:border-box}
+#seoBox>.box{margin-bottom:10px}
+#seoBox>.box:last-child{margin-bottom:0}
+#seoEN,#seoES{max-width:1100px;margin:0 auto 10px;padding:10px;box-sizing:border-box}
+@media(max-width:900px){#wrap{grid-template-columns:1fr}}
+.box{background:#fff;border:1px solid #b6c9db;border-radius:8px;padding:10px;margin-bottom:10px}
+.box h3{background:#e8eef7;margin:-10px -10px 8px;padding:6px 10px;font-size:13px;color:#33507a;border-radius:8px 8px 0 0}
+.meta{font-size:12px;opacity:.7}
+#avatarEl{width:70px;height:70px;border-radius:8px;background:#6aa5d7;color:#fff;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:bold;overflow:hidden;flex:none}
+#avatarEl img{width:100%;height:100%;object-fit:cover}
+.miniAv{width:20px;height:20px;border-radius:50%;background:#6aa5d7;color:#fff;font-size:11px;font-weight:bold;display:inline-flex;align-items:center;justify-content:center;vertical-align:-5px;margin-right:4px;overflow:hidden;cursor:pointer;border:none;padding:0}
+.miniAv img{width:100%;height:100%;object-fit:cover}
+#profModal{position:fixed;inset:0;background:rgba(20,40,70,.5);display:flex;align-items:flex-start;justify-content:center;padding:0;z-index:60;overflow-y:auto}
+#profCard{background:#fff;border-radius:0;padding:14px;max-width:860px;width:100%;min-height:100vh;box-sizing:border-box;text-align:left}
+#profPg{width:100%;border:1px solid #b6c9db;border-radius:8px;min-height:200px;margin-top:8px}
+#profPg iframe{width:100%;min-height:200px;border:0;border-radius:8px;display:block}
+#profOwnerBox{border:1px dashed #b6c9db;border-radius:8px;padding:8px;margin-top:8px;font-size:13px}
+#profAvatar{width:90px;height:90px;border-radius:12px;background:#6aa5d7;color:#fff;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:bold;overflow:hidden}
+#profAvatar img{width:100%;height:100%;object-fit:cover}
+#profMural h3{font-size:13px;color:#33507a;margin:8px 0 4px}
+button,input,select,textarea{font:inherit}
+input,select,textarea{width:100%;box-sizing:border-box}
+#feedCtn{max-height:62vh;overflow-y:auto;padding-right:4px}
+.post{border-top:1px solid #d9e6f2;padding:8px 0;word-break:break-word}
+.post img,.post video{max-width:100%;border-radius:6px}
+.chatlog{max-height:300px;overflow-y:auto;border:1px solid #d9e6f2;border-radius:6px;padding:6px;margin-top:6px}
+.chatlog div{font-size:13px;padding:2px 0;border-bottom:1px dotted #eee;word-break:break-word}
+.mention{background:#fff3c4;border-radius:4px;padding:0 3px;font-weight:bold}
+.mention-me{background:#ffdf7e;border-radius:4px;padding:0 3px;font-weight:bold}
+.chatname{color:#33507a;font-weight:bold;cursor:pointer}
+.fbar{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;align-items:center}
+.fbar button{font-size:12px;padding:2px 7px;border:1px solid #b6c9db;background:#eef4fb;border-radius:5px;cursor:pointer}
+.fbar button b,.fbar button i{pointer-events:none}
+.fbar input[type=color]{width:28px;height:22px;padding:0;border:1px solid #b6c9db;background:#fff}
+.fbar input[type=file]{font-size:11px;max-width:150px}
+.fbar input.linkIn{font-size:11px;max-width:150px}
+.fbar select{font-size:12px;width:auto}
+.badge{display:inline-block;min-width:18px;text-align:center;background:#d33;color:#fff;border-radius:9px;font-size:11px;padding:1px 5px;margin-left:6px}
+.chatfile{max-width:100%;border-radius:6px}
+#pubFlip{perspective:1400px}
+#pubFlipInner{transition:transform .25s ease}
+.pubHead{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+#pubPhotoEl{width:40px;height:40px;border-radius:8px;background:#6aa5d7;color:#fff;font-weight:bold;font-size:20px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:none}
+#pubPhotoEl img{width:100%;height:100%;object-fit:cover}
+#pubNameEl{font-weight:bold;color:#33507a;font-size:14px;word-break:break-word}
+#pubTopicsBar{display:flex;gap:4px;flex-wrap:wrap;margin:6px 0}
+#pubTopicsBar button{font-size:12px;padding:2px 8px;border:1px solid #b6c9db;background:#eef4fb;border-radius:12px;cursor:pointer;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#pubTopicsBar button.on{background:#33507a;color:#fff;border-color:#33507a}
+#pubGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;max-height:320px;overflow-y:auto;margin-top:8px}
+.pubCard{border:1px solid #b6c9db;border-radius:8px;padding:8px;text-align:left;background:#f6faff;cursor:pointer;font-size:12px}
+.pubCard.cur{border-color:#33507a;box-shadow:0 0 0 2px #33507a33}
+.pubCard img{width:100%;height:80px;object-fit:cover;border-radius:6px;background:#d9e6f2;display:block}
+.pubCard .t{font-weight:bold;font-size:13px;color:#33507a;margin-top:4px;word-break:break-word}
+.pubCard .d{font-size:11px;opacity:.75;word-break:break-word}
+.msgDel{font-size:11px;margin-left:6px;border:1px solid #b6c9db;background:#fff;border-radius:4px;cursor:pointer;padding:0 5px}
+#pubModPanel,#pubCreateForm{border:1px dashed #b6c9db;border-radius:8px;padding:8px;margin-top:8px;font-size:13px}
+#pubModPanel input,#pubCreateForm input,#pubCreateForm textarea{margin:2px 0}
+.chatimg{max-width:140px;border-radius:6px;display:block;margin-top:4px}
+.zz-blur{filter:blur(10px)!important;pointer-events:none;user-select:none}
+.zz-hide{display:none!important}
+.zz-ero{position:relative}
+.zz-erobar{display:flex;gap:6px;align-items:center;font-size:12px;background:#2b2b2b;color:#fff;border-radius:6px;padding:4px 8px;margin:4px 0}
+.zz-erobar button{font-size:11px;padding:2px 8px;border:1px solid #fff;background:#444;color:#fff;border-radius:5px;cursor:pointer}
+.zz-pendbar{display:flex;gap:6px;align-items:center;font-size:12px;background:#3a4a6b;color:#fff;border-radius:6px;padding:4px 8px;margin:4px 0}
+.eroTglLbl{font-size:11px;font-weight:normal;float:right;cursor:pointer;white-space:nowrap}
+.eroModeSel{font-size:11px;padding:0 4px;border:1px solid #b6c9db;border-radius:5px;background:#fff;max-width:110px}
+.onDot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#2ecc40;margin-left:4px;vertical-align:middle}
+.miniAv.on{box-shadow:0 0 0 2px #2ecc40}
+#infoList{font-size:12px;line-height:1.7}
+/* src/notfound/ canonical: src/notfound/card.css */
+#notfoundModal{position:fixed;inset:0;background:rgba(20,40,70,.55);display:flex;align-items:flex-start;justify-content:center;padding:12vh 12px;z-index:90}
+#notfoundModal .nfCard{background:#fff;border-radius:12px;padding:18px;max-width:420px;width:100%;text-align:center;box-shadow:0 8px 30px #0006}
+#notfoundModal .nfIcon{font-size:44px}
+#notfoundModal .nfTitle{font-weight:bold;font-size:17px;color:#33507a;margin:6px 0}
+#notfoundModal .nfMsg{font-size:13px;color:#444;margin-bottom:12px;word-break:break-word}
+#notfoundModal .nfRow{display:flex;gap:6px;justify-content:center}
+#searchModal{position:fixed;inset:0;background:rgba(20,40,70,.5);display:flex;align-items:flex-start;justify-content:center;padding:8vh 12px;z-index:50}
+#searchCard{background:#fff;border-radius:10px;padding:12px;max-width:520px;width:100%;max-height:70vh;overflow-y:auto;text-align:left}
+#searchOut{white-space:pre-wrap;font-size:13px;margin-top:8px}
+#searchPreview{max-width:100%;max-height:180px;border-radius:8px;display:block;margin-top:8px}
+.s-photo{border:1px solid #d9e6f2;border-left:4px solid #7a4fc9;border-radius:6px;padding:8px;margin-bottom:10px;font-size:13px;background:#faf6ff}
+.s-photo img{max-width:100%;max-height:160px;border-radius:6px;display:block;margin-bottom:6px}
+.spin{display:inline-block;width:12px;height:12px;border:2px solid #b6c9db;border-top-color:#33507a;border-radius:50%;animation:sp .8s linear infinite;vertical-align:-2px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.g-feat{border:1px solid #d9e6f2;border-left:4px solid #6aa5d7;border-radius:6px;padding:8px;margin-bottom:10px;font-size:13px;background:#f6faff}
+.g-t{color:#1a0dab;font-size:15px;text-decoration:none;display:block;line-height:1.35}
+.g-u{color:#006621;font-size:12px;word-break:break-all}
+.g-d{color:#545454;font-size:13px;margin:2px 0 0}
+.g-v{color:#137333;font-size:12px}
+#searchLinks .g-item{display:block;text-align:left;margin:0 0 12px;padding:0}
+#searchLinks .g-item:last-child{margin-bottom:0}
+#searchCard input{width:auto;min-width:0}
+#searchCard #searchInput,#searchCard #searchAnswerInput{flex:1 1 auto}
+#searchCard #searchFileRow{flex-direction:column;align-items:stretch}
+#searchCard #searchFile,#searchCard #searchLink{width:100%;flex:none}
+#searchBoxRow{position:relative}
+#searchSug{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #b6c9db;border-top:0;border-radius:0 0 8px 8px;z-index:5;max-height:220px;overflow-y:auto;box-shadow:0 6px 16px rgba(20,40,70,.2)}
+#searchSug div{padding:6px 10px;font-size:13px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#searchSug div.sel,#searchSug div:hover{background:#e8eef7}
+#divulgarModal{position:fixed;inset:0;background:rgba(20,40,70,.5);display:flex;align-items:flex-start;justify-content:center;padding:8vh 12px;z-index:50}
+#divulgarCard{background:#fff;border-radius:10px;padding:12px;max-width:520px;width:100%;max-height:75vh;overflow-y:auto;text-align:left}</style>
+</head>
+<body>
+
+
+  <div id="top"><img src="assets/logo.jpg" alt="logo da rede social anonima zunzum estilo orkut nostálgico anos 2000" width="36" height="36" style="border-radius:8px"><div class="top-brand"><h1 style="font-size:20px;margin:0">zunzum<span class="top-sub"> — rede anonima estilo orkut</span></h1><span class="meta top-desc">nostalgia anos 2000 | feed livre sem conta | chat publico e privado</span></div><span id="netEl" hidden></span><span id="userCountEl" class="meta" style="margin-left:auto"></span><div id="topBtns"><button id="searchBtn" title="buscar">🔍<span class="btn-txt"> buscar</span></button><button id="divulgarBtn" title="gerar texto para divulgar em foruns">📢<span class="btn-txt"> divulgar</span></button><button id="langBtn" title="view in English">EN</button></div></div>
+<noscript><div><h2>Zunzum — rede social anônima nostálgica estilo Orkut anos 2000</h2><p>Zunzum é uma rede social anônima brasileira com nostalgia do Orkut anos 2000: publique no feed sem criar conta, participe de comunidades, troque depoimentos e scraps como no Orkut antigo e converse no bate-papo público ou em salas privadas com uma conta simples de nick e senha. Sem email, grátis, com busca por IA, perfis com @nick e DJ IA. Para quem sente falta do Orkut, do bate-papo UOL, do MSN e dos fóruns retrô.</p><ul><li>Feed anônimo livre estilo Orkut, sem conta</li><li>Comunidades, depoimentos e scraps nostálgicos anos 2000</li><li>Bate-papo público e privado por código, com conta nick + senha</li><li>Busca com IA, perfis @nick e fórum retrô</li></ul></div></noscript>
+<noscript><div lang="en"><h2>Zunzum — nostalgic Orkut-style anonymous social network, 2000s vibe</h2><p>Zunzum is an anonymous social network with Orkut 2000s nostalgia: post to the retro feed with no account, join communities, exchange testimonials and scraps like on old Orkut and chat in the public room or private rooms with a simple nick + password account. No email, free, with AI search, @nick profiles and AI DJ. For those who miss Orkut, MSN and old-school forums.</p><ul><li>Free nostalgic Orkut-style anonymous feed, no account</li><li>Communities, testimonials and scraps, 2000s vibe</li><li>Public and private chat by code, with nick + password account</li><li>AI search, profiles, testimonials and suggestions</li></ul><p>English version: <a href="./?lang=en">perchance.org/zunzum?lang=en</a></p></div></noscript>
+<div id="wrap">
+<div>
+<div class="box"><h3>usuario</h3><div style="display:flex;gap:8px"><div id="avatarEl">?</div><div id="infoList"></div></div><div id="meEl" style="margin:6px 0;font-size:13px"></div><div id="authBox"></div></div>
+<div class="box"><h3>sobre</h3><div class="meta">Clima de Orkut anos 2000: comunidades, depoimentos e scraps.<br>Publique no feed sem conta.<br>Crie um nick com senha para conversar no bate-papo publico e em salas privadas.</div></div>
+<div class="box"><h3>espelho nostr 🤖</h3><div class="meta">Replica posts do feed pra rede Nostr com link de volta. Roda neste navegador enquanto ligado.</div><div id="mirStatus" class="meta">desligado</div><input id="mirKey" type="password" placeholder="chave privada hex (64 letras)" autocomplete="off"><div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap"><button id="mirBtn">ligar</button><button id="mirAIBtn" title="IA interage: curte, responde e segue de volta">IA ✅</button><button id="mirNewBtn" title="cria chave nova">nova chave</button><button id="mirShowBtn" title="mostrar/esconder chave">👁</button><button id="mirCopyBtn" title="copiar chave">copiar</button></div><span id="mirMsg" class="meta"></span></div>
+<div class="box"><h3>sugestões e bugs</h3><select id="sugKind"><option value="ideia">ideia de melhoria</option><option value="bug">bug</option></select><textarea id="sugText" placeholder="conte sua ideia ou bug..."></textarea><button id="sugBtn">enviar</button> <span id="sugMsg" class="meta"></span><div id="ownerBox"></div><div id="sugList"></div></div>
+</div>
+<div>
+<div class="box"><h3>postar sem conta</h3><div class="meta" id="anonRow" hidden></div><textarea id="textInput" placeholder="poste anonimamente..."></textarea><div style="display:flex;gap:6px"><input type="file" id="fileInput"><input id="feedLink" class="linkIn" placeholder="ou link ou base64"><button id="postBtn">postar</button></div><span id="upEl" class="meta"></span></div>
+<div class="box"><h3>feed compartilhado <label class="eroTglLbl" title="como tratar conteúdo erótico: embaçar, ocultar ou ver"><span class="eroLbl">🔞 erótico:</span> <select class="eroModeSel" style="width:auto;font-size:11px"><option value="blur">embaçar</option><option value="hide">ocultar</option><option value="show">ver</option></select></label></h3><div id="feedCtn"></div></div>
+</div>
+<div>
+<div class="box" id="pubBox"><h3>chat publico <label class="eroTglLbl" title="como tratar conteúdo erótico: embaçar, ocultar ou ver"><span class="eroLbl">🔞 erótico:</span> <select class="eroModeSel" style="width:auto;font-size:11px"><option value="blur">embaçar</option><option value="hide">ocultar</option><option value="show">ver</option></select></label></h3><div id="pubFlip"><div id="pubFlipInner"><div id="pubFront"><div class="pubHead"><div id="pubPhotoEl">💬</div><div style="flex:1;min-width:0"><div id="pubNameEl">#geral</div><div id="pubOwnerEl" class="meta"></div><div id="pubDescEl" class="meta"></div></div><div style="display:flex;gap:4px;flex:none;flex-wrap:wrap"><button id="pubFlipBtn" title="trocar de chat">🔄</button><button id="pubNewBtn" title="novo chat público">＋</button><button id="pubLinkBtn" title="copiar link da sala">🔗</button><button id="pubModBtn" title="moderação" hidden>⚙️</button></div></div><div id="pubTopicsBar"></div><div id="pubCreateForm" hidden><b>novo chat público</b><input id="pubNewName" placeholder="nome (2-40)" maxlength="40"><input id="pubNewDesc" placeholder="descrição curta (opcional)" maxlength="140"><div style="display:flex;gap:6px"><input type="file" id="pubNewFile" accept="image/*"><input id="pubNewPhoto" class="linkIn" placeholder="ou foto https://..."></div><div style="display:flex;gap:6px;margin-top:6px;align-items:center"><button id="pubCreateBtn">criar</button><button id="pubCreateCancelBtn">cancelar</button><span id="pubCreateMsg" class="meta"></span></div></div><div id="pubLock" class="meta"></div><div class="fbar" id="pubBar"><select id="pubMentionSel" title="marcar @"><option value="">@ marcar...</option></select><button id="pubB" title="negrito"><b>B</b></button><button id="pubI" title="italico"><i>I</i></button><button id="pubU" title="sublinhado"><u>U</u></button><button id="pubS" title="riscado"><s>S</s></button><input type="color" id="pubColor" value="#ff0000" title="cor"><button id="pubC" title="colorir">cor</button><input type="file" id="pubFile" accept="image/*,video/*,audio/*"><input id="pubLink" class="linkIn" placeholder="ou link https://..."></div><div style="display:flex;gap:6px"><input id="pubInput" placeholder="mensagem..."><button id="pubBtn">enviar</button></div><div id="pubLog" class="chatlog"></div><div id="pubModPanel" hidden></div></div><div id="pubBack" hidden><div style="display:flex;gap:6px"><input id="pubSearchInput" placeholder="procurar chats..."><button id="pubBackBtn">voltar</button></div><div id="pubCountEl" class="meta"></div><div id="pubGrid"></div></div></div></div></div>
+<div class="box"><h3>chat privado</h3><div class="meta">combinem um codigo e digitem igual:</div><div style="display:flex;gap:6px"><input id="privInput" placeholder="codigo ex: eu-voce-123"><button id="privBtn">entrar</button></div><div id="privLock" class="meta"></div><div id="privLockRow" style="display:flex;gap:6px;margin-top:6px;align-items:center" hidden><button id="privLockBtn" title="quando trancada, só entra quem você aprovar">🔓 aberta</button><span id="privOwnerEl" class="meta"></span></div><div id="privReqList" style="margin-top:6px"></div><div id="privAskRow" style="display:flex;gap:6px;margin-top:6px;align-items:center" hidden><button id="privAskBtn">pedir pra entrar</button></div><div style="display:flex;gap:6px;margin-top:6px"><input id="privInviteNick" placeholder="convidar @nick..."><button id="privInviteBtn" title="envia convite com o código da sala atual">convidar</button><button id="privCopyLinkBtn" title="copia o link que entra direto na sala">copiar link</button></div><div id="privInviteMsg" class="meta"></div><div class="fbar" id="privBar"><button id="privB" title="negrito"><b>B</b></button><button id="privI" title="italico"><i>I</i></button><button id="privU" title="sublinhado"><u>U</u></button><button id="privS" title="riscado"><s>S</s></button><input type="color" id="privColor" value="#ff0000" title="cor"><button id="privC" title="colorir">cor</button><input type="file" id="privFile" accept="image/*,video/*,audio/*"><input id="privLink" class="linkIn" placeholder="ou link https://..."></div><div style="display:flex;gap:6px"><input id="privMsgInput" placeholder="mensagem privada..."><button id="privSendBtn">enviar</button></div><div id="privLog" class="chatlog"></div></div>
+</div>
+</div>
+<div id="seoBox" style="max-width:1100px;margin:0 auto 10px;padding:0 10px;box-sizing:border-box"><div class="box"><h3>sobre o zunzum</h3><div style="font-size:13px;line-height:1.6">O <b>zunzum</b> é uma rede social anônima brasileira com nostalgia do <b>Orkut anos 2000</b>: feed livre sem conta, <b>comunidades</b>, <b>depoimentos e scraps</b> como no Orkut antigo, bate-papo público e salas privadas por código com conta simples de nick e senha, sem email e grátis. Tem busca com IA, perfis com @nick, sugestões de melhoria e DJ IA. Para quem sente falta do Orkut, do bate-papo UOL, do MSN e dos fóruns retrô: crie um nick, chame amigos pelo link do seu perfil e converse sem expor sua identidade.</div><div id="seoFeed" class="meta" style="margin-top:6px"></div></div></div>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"zunzum","alternateName":["zunzum — orkut nostálgico, rede anônima anos 2000","zunzum — rede anonima estilo orkut"],"url":"./","description":"Rede social anônima com nostalgia do Orkut anos 2000: feed livre sem conta, comunidades, depoimentos e scraps, bate-papo público e salas privadas por código. Conta só com nick e senha, sem email, grátis.","inLanguage":"pt-BR","keywords":"orkut, nostalgia, anos 2000, rede social anônima, comunidades, depoimentos, scraps, bate-papo, fórum retrô, msn, bate-papo uol"}</script>
+<div id="searchModal" hidden><div id="searchCard"><div id="searchBoxRow" style="display:flex;gap:6px"><input id="searchInput" placeholder="nome, nick ou o que procura?" autocomplete="off"><button id="goSearchBtn">ir</button><button id="closeSearchBtn">x</button><div id="searchSug" hidden></div></div><div id="searchFileRow" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><input type="file" id="searchFile" accept="image/*"><input id="searchLink" placeholder="ou link https://... ou cole base64"><button id="searchClearImg" title="remover foto" hidden>x</button></div><img id="searchPreview" hidden><div id="searchStatus" class="meta"></div><div id="searchOut"></div><div id="searchAnswerRow" hidden style="display:flex;gap:6px;margin-top:6px"><input id="searchAnswerInput" placeholder="responda aqui..."><button id="sendAnswerBtn">responder</button></div><div id="searchLinks"></div></div></div>
+<div id="profModal" hidden><div id="profCard"><div style="display:flex;gap:10px;align-items:center"><div id="profAvatar">?</div><div><div id="profNick" style="font-weight:bold;font-size:16px"></div><div id="profStats" class="meta"></div></div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button id="profMentionBtn">mencionar</button><button id="profInviteBtn" title="convidar para o chat privado atual">convidar p/ privado</button><button id="profMuteBtn" title="parar de receber notificações desta pessoa">🔕 silenciar</button><button id="profBlockBtn" title="esconder posts e mensagens desta pessoa">bloquear</button><button id="profShareBtn">compartilhar</button><button id="profCloseBtn">fechar</button></div><div id="profOwnerBox" hidden></div><div id="profPg" hidden></div><div id="profDepo" style="margin-top:8px;max-height:40vh;overflow-y:auto"></div><div id="profMural" style="margin-top:8px"></div></div></div>
+<div id="divulgarModal" hidden><div id="divulgarCard"><div style="display:flex;gap:6px;align-items:center"><b>📢 divulgação automática</b><button id="divulgarCloseBtn" style="margin-left:auto">x</button></div><div class="meta">Seu link pessoal conta convites sozinho — quem criar conta por ele entra pro seu ranking.</div><div style="display:flex;gap:6px;margin:8px 0"><input id="divulgarLink" readonly style="flex:1" placeholder="faça login p/ gerar seu link..."><button id="divulgarCopyAutoBtn">copiar</button></div><div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="divulgarShareBtn">📤 compartilhar</button><button id="divulgarWaBtn">whatsapp</button><button id="divulgarTgBtn">telegram</button><span id="divulgarAutoMsg" class="meta"></span></div><div class="meta" id="divulgarMyCount"></div><div id="divulgarTop" style="margin-top:6px;font-size:13px"></div><hr><div class="meta">Precisa de texto? A IA cria, você cola nos fóruns.</div><div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><select id="divulgarStyle" style="flex:1"><option value="forum">post de fórum</option><option value="curto">curto p/ comentário</option><option value="topico">tópico completo</option><option value="convidativo">convite whatsapp/telegram</option></select><button id="divulgarGenBtn">✨ gerar com IA</button></div><textarea id="divulgarText" rows="6" placeholder="clique em gerar com IA..."></textarea><div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap"><button id="divulgarCopyBtn">copiar texto</button><button id="divulgarCopyLinkBtn">copiar link</button><span id="divulgarMsg" class="meta"></span></div><div class="meta" style="margin-top:8px">onde postar: grupos do Facebook de divulgação, Lemmy BR, servidores Discord com canal #divulgação, grupos Telegram/WhatsApp de amizade. Dica: não faça spam — adapte o texto e participe da conversa.</div></div></div>
+<!-- src/notfound/ canonical: src/notfound/card.html -->
+<template id="notfoundTpl"><div class="nfCard"><div class="nfIcon" data-nf="icon">🧭</div><div class="nfTitle" data-nf="title">link inválido</div><div class="nfMsg" data-nf="msg"></div><div class="nfRow"><button data-nf="ok">fechar</button></div></div></template>
+<script src="src/standalone-shim.js"></script>
+<script src="src/i18n.js"></script>
+<script src="src/app.js"></script>
+<script src="src/nodal.js"></script>
+<script src="src/notify.js"></script>
+<script src="src/seo.js"></script>
+<script src="src/mobile.js"></script>
+<script>
+window._lazyQueue = ["src/divulgar.js","src/blob.js","src/search.js","src/music.js","src/mirror.js"];
+window._lazyStarted = false;
+function _loadLazyNow(){
+  if(window._lazyStarted) return; window._lazyStarted = true;
+  var q = window._lazyQueue.slice();
+  (function next(){
+    if(!q.length) return;
+    var s = document.createElement("script"); s.src = q.shift(); s.async = false;
+    s.onload = s.onerror = next;
+    document.body.appendChild(s);
+  })();
+}
+try{
+  if("requestIdleCallback" in window) requestIdleCallback(_loadLazyNow, {timeout:4000});
+  else setTimeout(_loadLazyNow, 2500);
+  ["pointerdown","touchstart","keydown"].forEach(function(ev){
+    document.addEventListener(ev, _loadLazyNow, {passive:true});
+  });
+  setTimeout(_loadLazyNow, 8000);
+}catch(e){ setTimeout(_loadLazyNow, 2500); }
+</script>
+
+</body>
+</html>

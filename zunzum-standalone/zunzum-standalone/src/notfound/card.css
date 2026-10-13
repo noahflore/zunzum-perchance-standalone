@@ -1,0 +1,6 @@
+#notfoundModal{position:fixed;inset:0;background:rgba(20,40,70,.55);display:flex;align-items:flex-start;justify-content:center;padding:12vh 12px;z-index:90}
+#notfoundModal .nfCard{background:#fff;border-radius:12px;padding:18px;max-width:420px;width:100%;text-align:center;box-shadow:0 8px 30px #0006}
+#notfoundModal .nfIcon{font-size:44px}
+#notfoundModal .nfTitle{font-weight:bold;font-size:17px;color:#33507a;margin:6px 0}
+#notfoundModal .nfMsg{font-size:13px;color:#444;margin-bottom:12px;word-break:break-word}
+#notfoundModal .nfRow{display:flex;gap:6px;justify-content:center}
