@@ -1,0 +1,70 @@
+/* zundm — amigos + DM instantâneo (facebook antigo/zap) + presença por usuário.
+   Janelas fixas acima de todos os modais (z-index 200). Cabeçalhos marcados
+   com .zun-mhead p/ proteção de cor do zunfix (cura 4.5:1). */
+#zunDMRoot{position:fixed;right:10px;bottom:10px;z-index:200;display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;justify-content:flex-end;max-width:96vw;pointer-events:none}
+#zunDMRoot .zun-dm-win{pointer-events:auto;position:relative;width:300px;max-width:92vw;height:380px;max-height:min(70vh,480px);background:#fff;border:1px solid #b6c9db;border-radius:12px 12px 8px 8px;box-shadow:0 10px 30px rgba(20,40,70,.35);display:flex;flex-direction:column;overflow:hidden}
+#zunDMRoot .zun-dm-h{display:flex;gap:6px;align-items:center;background:#e8eef7;color:#33507a;padding:6px 8px;font-size:13px;font-weight:bold;border-bottom:1px solid #b6c9db;cursor:pointer;min-height:34px}
+#zunDMRoot .zun-dm-h .zun-dm-av{width:26px;height:26px;border-radius:50%;background:#6aa5d7;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:bold;overflow:hidden;flex:none}
+#zunDMRoot .zun-dm-h .zun-dm-av img{width:100%;height:100%;object-fit:cover}
+#zunDMRoot .zun-dm-h .zun-dm-peer{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#zunDMRoot .zun-dm-h .zun-st{width:9px;height:9px;border-radius:50%;flex:none}
+#zunDMRoot .zun-dm-h .zun-st.on{background:#2ecc40}
+#zunDMRoot .zun-dm-h .zun-st.aus{background:#f39c12}
+#zunDMRoot .zun-dm-h .zun-st.off{background:#bbb}
+#zunDMRoot .zun-dm-h button{background:transparent;border:0;cursor:pointer;font-size:14px;padding:0 4px;color:inherit}
+#zunDMRoot .zun-dm-log{flex:1 1 auto;min-height:0;height:auto;max-height:none;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;background:#ece5dd;padding:8px;display:flex;flex-direction:column;gap:4px}
+#zunDMRoot .zun-bub{flex:none;max-width:85%;padding:5px 8px;border-radius:10px;font-size:13px;line-height:1.45;word-break:break-word;box-shadow:0 1px 1px rgba(0,0,0,.12)}
+#zunDMRoot .zun-bub.mine{align-self:flex-end;background:#dcf8c6;color:#111}
+#zunDMRoot .zun-bub.theirs{align-self:flex-start;background:#fff;color:#111}
+#zunDMRoot .zun-bub img.chatimg{max-width:100%;max-height:180px;width:auto;height:auto;border-radius:6px;display:block;margin-top:4px;background:#d8d2c7}
+#zunDMRoot .zun-bub video,#zunDMRoot .zun-bub audio{max-width:100%;max-height:200px;display:block;margin-top:4px}
+#zunDMRoot .zun-meta{font-size:10px;opacity:.65;text-align:right;margin-top:2px}
+#zunDMRoot .zun-tick{font-size:11px;margin-left:4px}
+#zunDMRoot .zun-tick.seen{color:#53bdeb;font-weight:bold}
+#zunDMRoot .zun-tick.sent{color:#888}
+#zunDMRoot .zun-typing{font-size:11px;font-style:italic;opacity:.8;min-height:16px;height:16px;line-height:16px;padding:0 8px;color:#33507a;background:#f6faff;flex:none;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#zunDMRoot .zun-typing[hidden]{display:block!important;visibility:hidden}
+#zunDMRoot .zun-comp{position:relative;border-top:1px solid #d9e6f2;background:#f6faff;padding:6px;display:flex;flex-direction:column;gap:4px;flex:none}
+#zunDMRoot .zun-comp textarea{width:100%;box-sizing:border-box;height:38px;min-height:38px;max-height:110px;resize:none;overflow-y:auto;font-size:14px}
+#zunDMRoot .zun-row{display:flex;gap:4px;align-items:center;min-height:26px}
+#zunDMRoot .zun-st2{display:inline-block;min-width:8px;min-height:14px}
+#zunDMRoot .zun-row input[type=file]{font-size:11px;max-width:140px}
+#zunDMRoot .zun-row button{font-size:12px;padding:4px 8px;border:1px solid #b6c9db;background:#eef4fb;border-radius:6px;cursor:pointer}
+#zunDMRoot .zun-send{background:#2f7a3d!important;color:#fff!important;border-color:#256232!important;font-weight:bold}
+#zunDMRoot .zun-badge{display:inline-block;min-width:18px;text-align:center;background:#d33;color:#fff;border-radius:9px;font-size:11px;padding:1px 5px;margin-left:4px}
+#zunDMRoot .zun-dm-win.min{height:auto;max-height:none}
+#zunDMRoot .zun-dm-win.min .zun-dm-log,#zunDMRoot .zun-dm-win.min .zun-typing,#zunDMRoot .zun-dm-win.min .zun-comp,#zunDMRoot .zun-dm-win.min .zun-newpill{display:none!important}
+#zunDMRoot .zun-dm-win.min .zun-dm-h{border-bottom:0}
+#zunDMRoot .zun-tbadge:empty{display:none}
+/* aviso "↓ novas": flutuante p/ não mexer no layout; aparece quando chega msg
+   e o usuário está lendo o histórico (em vez de puxar p/ o fim) */
+#zunDMRoot .zun-newpill{position:absolute;left:50%;transform:translateX(-50%);bottom:128px;z-index:5;border:1px solid #6aa5d7;background:#33507a;color:#fff;border-radius:14px;padding:3px 12px;font-size:11px;font-weight:bold;cursor:pointer;box-shadow:0 4px 12px rgba(20,40,70,.35);white-space:nowrap}
+#zunDMRoot .zun-newpill[hidden]{display:none}
+#zunDMRoot .zun-flash{animation:zunFlash 1s ease-in-out 2}
+@keyframes zunFlash{0%,100%{filter:none}50%{filter:brightness(1.4)}}
+#zunDMBar{position:fixed;left:10px;bottom:10px;z-index:200;display:flex;gap:6px;flex-wrap:wrap;max-width:60vw}
+#zunDMBar button{border:1px solid #b6c9db;background:#fff;border-radius:16px;padding:4px 10px;font-size:12px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+#zunFriendPanel .zun-frow{display:flex;gap:6px;align-items:center;padding:4px 0;border-top:1px dotted #b6c9db;font-size:13px}
+#zunFriendPanel .zun-fav{width:24px;height:24px;border-radius:50%;background:#6aa5d7;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;overflow:hidden;flex:none}
+#zunFriendPanel .zun-fav img{width:100%;height:100%;object-fit:cover}
+#zunFriendPanel .zun-st{width:9px;height:9px;border-radius:50%;flex:none}
+#zunFriendPanel .zun-st.on{background:#2ecc40}
+#zunFriendPanel .zun-st.aus{background:#f39c12}
+#zunFriendPanel .zun-st.off{background:#bbb}
+#zunFriendPanel button{font-size:11px;padding:2px 7px;border:1px solid #b6c9db;background:#eef4fb;border-radius:5px;cursor:pointer}
+#zunStatusSel{width:auto;font-size:12px}
+.zun-st-aus{background:#f39c12!important}
+@media(max-width:900px){
+  #zunDMRoot{right:0;left:0;bottom:0;top:auto;max-width:100vw;padding:0}
+  #zunDMRoot .zun-dm-win{width:100vw;max-width:100vw;border-radius:0;height:min(62dvh,440px);max-height:70dvh}
+  #zunDMBar{bottom:auto;top:52px;left:8px;right:8px;max-width:none}
+  #zunDMRoot .zun-comp textarea{font-size:16px}
+  #zunDMRoot .zun-row button{min-height:44px;min-width:44px;font-size:14px;padding:8px 10px}
+}
+body.zun-night #zunDMRoot .zun-dm-win{background:#23233a!important;border-color:#3a3a5c!important}
+body.zun-night #zunDMRoot .zun-dm-h{background:#2a2a45!important;color:#cfd2ff!important;border-color:#3a3a5c!important}
+body.zun-night #zunDMRoot .zun-dm-log{background:#1a1a2c!important}
+body.zun-night #zunDMRoot .zun-bub.theirs{background:#2a2a45!important;color:#e8e8f2!important}
+body.zun-night #zunDMRoot .zun-bub.mine{background:#2f5a3d!important;color:#eafff0!important}
+body.zun-night #zunDMRoot .zun-comp{background:#23233a!important;border-color:#3a3a5c!important}
+body.zun-night #zunDMRoot .zun-typing{background:#23233a!important;color:#cfd2ff!important}

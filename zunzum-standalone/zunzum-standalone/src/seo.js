@@ -1,6 +1,6 @@
 (function(){
 function baseUrl(){
-return (window.ZUNZUM_BASE||"https://perchance.org/zunzum");
+return "https://perchance.org/"+(window.generatorName||"zunzum");
 }
 function canon(){
 try{
@@ -132,7 +132,7 @@ l.href=sitemapUrl();
 function collectNicks(){
 var set={}, order=[];
 function add(n){ n=String(n||"").replace(/^@/,"").toLowerCase().slice(0,20); if(!/^[a-z0-9-]{2,20}$/.test(n)) return; if(!set[n]){ set[n]=1; order.push(n); } }
-try{ var m=JSON.parse(localStorage.getItem("orkutSession")||"null"); if(m&&m.nick) add(m.nick); }catch(e){}
+try{ var rawM=null; try{ rawM=sessionStorage.getItem("orkutSession")||localStorage.getItem("orkutSession"); }catch(e){} var m=JSON.parse(rawM||"null"); if(m&&m.nick) add(m.nick); }catch(e){}
 try{ if(typeof onlineNicks!=="undefined"&&onlineNicks&&onlineNicks.forEach) onlineNicks.forEach(add); }catch(e2){}
 try{
 var els=document.querySelectorAll("#feedCtn .chatname, #pubLog .chatname");
@@ -163,6 +163,14 @@ return days>=(maxDays||7);
 }
 async function pushSitemap(){
 try{
+/* F4 owner-only: antes QUALQUER visitante publicava e o primeiro levava a
+   chave do editable (first-writer-wins = squat: dono nunca mais atualizava).
+   Agora só publica na sessão do dono (dono.js carregado → window._isOwner).
+   Chave pré-criada: o dono pode colar o editKey em
+   localStorage.ZUN_SITEMAP_EDITKEY (vale p/ todo mês); sem ela, a chave nasce
+   no 1º push e vive no sessionStorage (aba). O nome gira por mês, então uma
+   chave perdida só afeta o mês corrente. */
+try{ if(!window._isOwner) return; }catch(e){ return; }
 if(typeof root==="undefined"||!root.uploadPlugin||!root.uploadPlugin.editable||!root.uploadPlugin.editable.get) return;
 var name=sitemapName();
 var cur=""; try{ cur=await root.uploadPlugin.editable.get(name)||""; }catch(e){ cur=""; }
@@ -173,11 +181,17 @@ var all=sitemapMerge(cur,nicks);
 if(!all.length) return;
 var res=null;
 try{
-var key=null; try{ key=localStorage.getItem("zunzumSitemapKey:"+name); }catch(e2){}
+var key=null, preset="";
+try{ preset=String(localStorage.getItem("ZUN_SITEMAP_EDITKEY")||""); }catch(eP){}
+try{ key=sessionStorage.getItem("zunzumSitemapKey:"+name)||""; }catch(eK){ key=""; }
+if(!key && preset){ key=preset; }
+if(!key){ try{ key=localStorage.getItem("zunzumSitemapKey:"+name)||""; if(key&&sessionStorage.getItem("zunzumSitemapKey:"+name)!==key){ try{ sessionStorage.setItem("zunzumSitemapKey:"+name,key); }catch(eM){} try{ localStorage.removeItem("zunzumSitemapKey:"+name); }catch(eM2){} } }catch(e2){} }
 res=await root.uploadPlugin.editable.set(name, sitemapXml(all), key?{editKey:key}:undefined);
 }catch(e3){ return; }
 if(res&&res.error) return;
-if(res&&res.editKey){ try{ localStorage.setItem("zunzumSitemapKey:"+name,res.editKey); }catch(e4){} }
+/* editKey = senha de escrita do sitemap: sessionStorage (aba), sem persistir
+   em disco — roubo via XSS não sobrevive ao fechar a aba. */
+if(res&&res.editKey){ try{ sessionStorage.setItem("zunzumSitemapKey:"+name,res.editKey); }catch(e4){} try{ localStorage.removeItem("zunzumSitemapKey:"+name); }catch(e44){} }
 try{ localStorage.setItem("zunzumSitemapAt:"+name, String(Date.now())); }catch(e5){}
 }catch(e9){}
 }

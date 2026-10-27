@@ -1,0 +1,362 @@
+/* zunzum chat-ux — polimento geral + dock do chat + emoji SVG + combo.
+   Carregado via <link> no index.html, DEPOIS do <style> principal, então vence
+   sem precisar de !important (exceto onde o modo noturno usa !important). */
+
+:root{
+  --zz-acc:#33507a;
+  --zz-acc2:#6aa5d7;
+  --zz-line:#d9e6f2;
+  --zz-card:#ffffff;
+  --zz-soft:#f6faff;
+  --zz-ink:#22344d;
+  --zz-mut:#5b7290;
+  --zz-send:#2f7a3d;
+  --zz-send-h:#256232;
+  --zz-radius:12px;
+}
+
+/* ---------- polimento geral (mantém simplicidade orkut) ---------- */
+#top{
+  background:linear-gradient(180deg,#5b9bd9,#6aa5d7 70%,#5f9dd4);
+  box-shadow:0 2px 10px rgba(20,40,70,.25);
+}
+#top h1{letter-spacing:.2px}
+.box{
+  border-radius:var(--zz-radius);
+  box-shadow:0 2px 10px rgba(20,40,70,.08);
+  border:1px solid #b6c9db;
+}
+.box h3{
+  background:linear-gradient(180deg,#eef4fb,#e2ebf7);
+  border-bottom:1px solid var(--zz-line);
+  border-radius:var(--zz-radius) var(--zz-radius) 0 0;
+  letter-spacing:.2px;
+}
+button{
+  border-radius:8px;
+  transition:transform .06s ease, background .15s ease, box-shadow .15s ease;
+}
+button:hover{filter:brightness(.97)}
+button:active{transform:translateY(1px) scale(.99)}
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible{
+  outline:2px solid var(--zz-acc2);
+  outline-offset:1px;
+}
+input, select, textarea{
+  border:1px solid #b6c9db;
+  border-radius:8px;
+  padding:7px 9px;
+  background:#fff;
+  color:var(--zz-ink);
+}
+input:focus, select:focus, textarea:focus{
+  border-color:var(--zz-acc2);
+  box-shadow:0 0 0 3px rgba(106,165,215,.22);
+}
+textarea{line-height:1.45;resize:vertical}
+.meta{color:var(--zz-mut)}
+.chatname{border-radius:4px;padding:0 2px}
+.chatname:hover{background:#e8eef7}
+
+/* scrollbars discretas */
+.chatlog::-webkit-scrollbar, #feedCtn::-webkit-scrollbar{width:9px}
+.chatlog::-webkit-scrollbar-thumb, #feedCtn::-webkit-scrollbar-thumb{
+  background:#b6c9db;border-radius:8px;border:2px solid #fff;
+}
+.chatlog::-webkit-scrollbar-track, #feedCtn::-webkit-scrollbar-track{background:transparent}
+
+/* ---------- chat: bolhas leves (sem virar app complicado) ---------- */
+.chatlog{
+  background:var(--zz-soft);
+  border:1px solid var(--zz-line);
+  border-radius:10px;
+  padding:8px;
+}
+.chatlog > div{
+  background:#fff;
+  border:1px solid #e3edf7 !important;
+  border-bottom:1px solid #e3edf7 !important;
+  border-radius:10px;
+  padding:6px 9px !important;
+  margin:5px 0;
+  box-shadow:0 1px 2px rgba(20,40,70,.05);
+}
+.chatlog > div.mine{
+  background:#eaf4ff;
+  border-color:#c4dcf5 !important;
+}
+.chatlog .ttext{line-height:1.5}
+.chatfile{border-radius:8px}
+
+/* ---------- dock do composer (caixa de texto EMBAIXO, grudada) ---------- */
+.chatDock{
+  position:sticky;
+  bottom:0;
+  z-index:5;
+  background:linear-gradient(180deg,rgba(246,250,255,0),var(--zz-soft) 28%);
+  margin:8px -8px -8px;
+  padding:8px 8px 9px;
+  border-top:1px solid var(--zz-line);
+  border-radius:0 0 10px 10px;
+}
+.chatDock .fbar{margin-top:0}
+.composerRow{display:flex;gap:6px;margin-top:6px;align-items:flex-end}
+.composerRow textarea{
+  flex:1 1 auto;
+  min-height:40px;
+  max-height:120px;
+  overflow-y:auto;
+  font-size:16px; /* evita zoom no iOS */
+}
+.composerRow button{flex:none}
+.emojiBtn{
+  font-size:19px !important;
+  line-height:1;
+  min-width:44px;
+  min-height:44px;
+}
+.sendBtn{
+  background:var(--zz-send) !important;
+  border:1px solid var(--zz-send-h) !important;
+  color:#fff !important;
+  font-weight:bold;
+  min-width:64px;
+  min-height:44px;
+  padding:8px 14px !important;
+}
+.sendBtn:hover{background:var(--zz-send-h) !important}
+.sendBtn:disabled{opacity:.55;cursor:wait}
+.composerOpts{
+  display:flex;gap:8px;align-items:center;
+  margin-top:5px;font-size:11px;color:var(--zz-mut);
+}
+.enterTgl{display:inline-flex;gap:4px;align-items:center;cursor:pointer;white-space:nowrap}
+.enterTgl input{width:auto;accent-color:var(--zz-acc)}
+.attachRow{display:flex;gap:6px;margin-top:6px;align-items:center;flex-wrap:wrap}
+.attachRow input[type=file]{font-size:11px;max-width:170px}
+.attachRow .linkIn{font-size:11px;flex:1;min-width:140px}
+
+/* ---------- emoji SVG inline (pequeno no chat) ---------- */
+.zemo{
+  display:inline-block;
+  width:24px;height:24px;
+  vertical-align:-5px;
+  margin:0 1px;
+  line-height:0;
+}
+.zemo svg{width:100%;height:100%;display:block}
+.zem-uni{
+  width:1.3em;height:1.3em;
+  vertical-align:-.25em;
+  margin:0 .5px;
+}
+/* trava de segurança: se algum dia um emoji-img cair dentro de botão, não deixa o flex esmagar */
+button img.zem-uni{flex:none;min-width:1.2em;min-height:1.2em}
+/* depoimentos / mural / feed também */
+.post .zemo{width:22px;height:22px}
+
+/* ---------- picker ---------- */
+.emojiWrap{position:relative;flex:none;display:inline-flex;gap:4px}
+.gifBtn{border:1px dashed #b6c9db !important}
+.zEmojiPanel{
+  position:absolute;
+  bottom:calc(100% + 8px);
+  left:0;
+  width:min(320px,80vw);
+  max-height:300px;
+  overflow-y:auto;
+  background:#fff;
+  border:1px solid #b6c9db;
+  border-radius:12px;
+  box-shadow:0 10px 30px rgba(20,40,70,.28);
+  padding:8px;
+  z-index:60;
+  text-align:left;
+}
+.zEmojiPanel .zsec{margin-bottom:8px}
+.zEmojiPanel .zTabs{position:sticky;top:-8px;display:flex;gap:6px;padding:6px 2px 8px;background:inherit;z-index:2}
+.zEmojiPanel .zTabs button{flex:1;min-height:40px;font-size:13px;border:1px solid #b6c9db;background:#eef4fb;border-radius:999px;cursor:pointer;padding:6px 4px}
+.zEmojiPanel .zTabs button.on{background:var(--zz-acc);color:#fff;border-color:var(--zz-acc);font-weight:bold}
+.zEmojiPanel .zsecT{font-size:11px;color:var(--zz-mut);margin:2px 2px 5px}
+.zEmojiGrid{display:flex;flex-wrap:wrap;gap:4px}
+.zEmojiGrid button{
+  border:1px solid transparent;
+  background:transparent;
+  border-radius:8px;
+  padding:4px;
+  min-width:38px;min-height:38px;
+  font-size:20px;line-height:1;
+  cursor:pointer;
+}
+.zEmojiGrid button:hover{background:#e8eef7;border-color:#b6c9db}
+.zEmojiGrid button .zemo{width:26px;height:26px}
+.zEmojiGrid button img.zem-uni{width:24px;height:24px}
+
+/* ---------- gifmoji (gif público pequeno e comprimido) ---------- */
+.zGmSearchRow{display:flex;gap:6px;margin:4px 2px 6px;align-items:center}
+#zGmSearch{flex:1;min-width:0;font-size:13px;padding:6px 9px}
+#zGmCount{font-size:11px;white-space:nowrap}
+.zem-gifmoji{height:30px;max-width:96px;vertical-align:-8px;margin:0 1px;border-radius:6px;background:#d9e6f2}
+.post .zem-gifmoji{height:28px}
+button img.zem-gifmoji{flex:none;min-width:30px;min-height:30px}
+.zEmojiGrid button img.zem-gifmoji{width:34px;height:34px;object-fit:contain;background:transparent}
+#zGmGrid button img.zGmBlur{filter:blur(5px)}
+#zEmojiPanel .zz-erobar,#zEmojiPanel .zz-pendbar{display:none !important}
+#zGmModal{position:fixed;inset:0;background:rgba(20,40,70,.55);display:flex;align-items:flex-start;justify-content:center;padding:10vh 12px;z-index:300}
+#zGmModal[hidden]{display:none}
+#zGmModal .zGmCard{background:#fff;border-radius:12px;padding:14px;max-width:340px;width:100%;box-shadow:0 8px 30px #0006;text-align:left}
+#zGmModal .zGmCard h3{margin:0 0 8px;font-size:14px;color:#33507a}
+#zGmModal .zGmPrev{max-width:160px;max-height:160px;border-radius:8px;display:block;margin:0 auto 8px;background:#d9e6f2}
+#zGmModal .zGmNameRow{display:flex;gap:4px;align-items:center;margin:4px 0}
+#zGmModal .zGmNameRow input{flex:1;min-width:0}
+#zGmModal .zGmStatus{min-height:16px;margin:4px 0}
+#zGmModal .zGmBtns{display:flex;gap:6px}
+#zGmModal .zGmGo{background:#2f7a3d;color:#fff;border:1px solid #256232;border-radius:6px;padding:4px 10px;font-weight:bold;cursor:pointer}
+#zGmModal .zGmCancel{border:1px solid #b6c9db;background:#eef4fb;border-radius:6px;padding:4px 10px;cursor:pointer}
+
+/* ---------- combo (emoji grande que aparece e volta ao normal) ---------- */
+#zCombo{
+  position:fixed;
+  inset:0;
+  z-index:9998;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:8px;
+  pointer-events:none;
+  background:radial-gradient(ellipse at center,rgba(20,40,70,.28),rgba(20,40,70,0) 65%);
+  animation:zComboBg 2.8s ease forwards;
+}
+#zCombo[hidden]{display:none !important}
+#zCombo .zComboBig{
+  width:min(180px,52vw);height:min(180px,52vw);
+  filter:drop-shadow(0 10px 24px rgba(0,0,0,.35));
+  animation:zComboPop 2.8s cubic-bezier(.2,1.4,.3,1) forwards;
+}
+#zCombo .zComboBig svg{width:100%;height:100%}
+#zCombo .zComboTxt{
+  background:#fff;
+  border:2px solid var(--zz-acc2);
+  color:var(--zz-acc);
+  font-weight:bold;font-size:14px;
+  border-radius:999px;
+  padding:6px 14px;
+  box-shadow:0 4px 14px rgba(0,0,0,.25);
+  animation:zComboPop 2.8s ease forwards;
+  max-width:86vw;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+@keyframes zComboPop{
+  0%{transform:scale(.2) rotate(-10deg);opacity:0}
+  12%{transform:scale(1.15) rotate(3deg);opacity:1}
+  22%{transform:scale(1) rotate(0)}
+  78%{transform:scale(1);opacity:1}
+  100%{transform:scale(.6) translateY(-18px);opacity:0}
+}
+@keyframes zComboBg{0%{opacity:0}12%{opacity:1}78%{opacity:1}100%{opacity:0}}
+
+/* ---------- caixinhas maiores ---------- */
+#textInput{min-height:84px}
+#sugText{min-height:70px}
+#profDepo textarea{min-height:96px}
+
+/* ---------- resposta do feed: caixa dinâmica igual ao chat ---------- */
+.post [data-pid] .composerRow{display:flex;gap:6px;margin-top:4px;align-items:flex-end}
+.post [data-pid] .composerRow textarea{
+  flex:1 1 auto;min-width:0;
+  min-height:36px;max-height:120px;
+  overflow-y:hidden;resize:none;
+  font-size:14px;line-height:1.45;
+}
+.post [data-pid] .composerRow .sendBtn{flex:none;min-height:36px;min-width:64px}
+
+/* ---------- mobile: gostoso de enviar ---------- */
+@media(max-width:900px){
+  body.zun-mobile .chatlog{max-height:46dvh;font-size:14px}
+  body.zun-mobile .chatlog > div{padding:8px 10px !important}
+  .composerRow textarea{min-height:48px;font-size:16px}
+  .sendBtn{min-height:52px;min-width:76px;font-size:16px}
+  .emojiBtn{min-height:52px;min-width:52px}
+  .fbar{flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px}
+  #pubAttachBtn,#privAttachBtn{order:-1}
+  .fbar button{min-height:40px;min-width:40px}
+  /* caixinha de comentário / depoimento / postar bem maior no celular */
+  body.zun-mobile #textInput{min-height:112px;font-size:16px}
+  body.zun-mobile #sugText{min-height:96px;font-size:16px}
+  #profDepo textarea{min-height:120px !important;font-size:16px !important}
+  #profMural iframe{width:100% !important}
+  .attachRow input[type=file]{max-width:100%}
+  /* top-sheet: NÃO cobre o composer (input+enviar ficam visíveis); teclado fechado ao abrir */
+  .zEmojiPanel{position:fixed;left:8px;right:8px;top:11dvh;bottom:auto;width:auto;max-height:56dvh;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+  .zEmojiPanel .zTabs button{min-height:44px;font-size:13px}
+  .zEmojiGrid{gap:6px}
+  .zEmojiGrid button{min-width:44px;min-height:44px}
+  .zEmojiGrid button img.zem-gifmoji{width:48px;height:48px}
+  #zGmGrid button{flex-direction:column}
+}
+@media(pointer:coarse){
+  .sendBtn{min-height:48px}
+  .zemo{width:26px;height:26px}
+}
+
+/* ---------- modo noturno (espelha os novos) ---------- */
+body.zun-night .chatlog{background:#1a1a2c !important}
+body.zun-night .chatlog > div{background:#23233a !important;border-color:#3a3a5c !important;color:#e8e8f2 !important}
+body.zun-night .chatlog > div.mine{background:#27334f !important;border-color:#3f5a86 !important}
+body.zun-night .chatDock{background:linear-gradient(180deg,rgba(26,26,44,0),#1a1a2c 30%) !important;border-color:#3a3a5c !important}
+body.zun-night .zEmojiPanel{background:#23233a !important;border-color:#3a3a5c !important}
+body.zun-night .zEmojiPanel .zsecT{color:#aaa !important}
+body.zun-night .zEmojiGrid button:hover{background:#2a2a45 !important}
+body.zun-night .zEmojiPanel .zTabs button{background:#2a2a45 !important;color:#e8e8f2 !important;border-color:#3a3a5c !important}
+body.zun-night .zEmojiPanel .zTabs button.on{background:#33507a !important;color:#fff !important}
+body.zun-night #zCombo .zComboTxt{background:#23233a !important;color:#cfd2ff !important;border-color:#4a4a6c !important}
+body.zun-night .composerOpts{color:#aaa !important}
+
+@media(prefers-reduced-motion:reduce){
+  #zCombo .zComboBig, #zCombo .zComboTxt{animation-duration:.4s}
+}
+
+/* ---------- citação/quote no chat ([q=@nick]...[/q]) ---------- */
+.chatlog .ttext{cursor:pointer}
+.chatlog .ttext:hover{background:rgba(106,165,215,.12)}
+.zquote{border-left:3px solid #6aa5d7;background:#eef4fb;border-radius:0 8px 8px 0;padding:4px 8px;margin:3px 0;display:block;font-size:12.5px;line-height:1.45}
+.zq-nick{font-weight:bold;color:#33507a;margin-right:5px}
+.msgQuote{min-width:26px}
+body.zun-night .zquote{background:#23233a !important;border-left-color:#6aa5d7 !important}
+body.zun-night .zq-nick{color:#9fc3e8 !important}
+
+/* ---------- YouTube embarcado no feed (fachada leve -> iframe) ---------- */
+.ytFac{
+  position:relative;
+  width:100%;
+  max-width:480px;
+  aspect-ratio:16/9;
+  background:#000;
+  border-radius:8px;
+  overflow:hidden;
+  margin-top:6px;
+  cursor:pointer;
+  border:1px solid #b6c9db;
+}
+.ytFac img{width:100%;height:100%;object-fit:cover;display:block;border:0}
+.ytFac iframe{width:100%;height:100%;border:0;display:block}
+.ytFac .ytPlay{
+  position:absolute;inset:0;margin:auto;
+  width:64px;height:44px;
+  border:0;border-radius:12px;
+  background:rgba(230,30,30,.92);color:#fff;
+  font-size:20px;line-height:1;
+  cursor:pointer;
+  transition:transform .12s ease, background .12s ease;
+}
+.ytFac:hover .ytPlay{background:#e61e1e;transform:scale(1.08)}
+.ytFac .ytOpen{
+  position:absolute;right:6px;bottom:6px;z-index:2;
+  max-width:calc(100% - 12px);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  background:rgba(0,0,0,.65);color:#fff !important;
+  font-size:11px;line-height:1.5;border-radius:6px;padding:2px 8px;
+  text-decoration:none;
+}
+body.zun-night .ytFac{border-color:#3a3a5c !important}

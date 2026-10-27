@@ -1,6 +1,6 @@
 (function(){
 "use strict";
-// CARREGADOR do modulo do dono (todo o angiru saiu do src/ publico).
+// CARREGADOR do modulo do dono (o modulo real fica fora do src/ publico).
 // Nada aqui e sensivel: o modulo real vive num ARQUIVO criptografado que so
 // o dono tem. Fluxo: dono abre a divulgacao, digita a CHAVE + escolhe o ARQUIVO,
 // o navegador descriptografa (PBKDF2 + AES-GCM) e executa via Blob — tudo so
@@ -16,6 +16,37 @@ function b64ToBytes(b64){
   for(var i=0;i<bin.length;i++) o[i] = bin.charCodeAt(i);
   return o;
 }
+// BASE pública do módulo do dono: o arquivo criptografado guarda só o corpo;
+// a base (kv local, estado em memória, log, credenciais temporárias, $ e ANG)
+// mora aqui, no carregador público, e é injetada no mesmo script antes do corpo.
+// Nada aqui é sensível: email/senha/token só existem em execução, no navegador.
+var ANGIRU_BASE =
+  'var LS_EMAIL="zunzumAngiruEmail";\n' +
+  'var LS_PASS="zunzumAngiruPass";\n' +
+  'function $(id){ return document.getElementById(id); }\n' +
+  'var S={status:"",act:"",busy:false,pollBusy:false,_botMsgs:null,_pollCtxAt:0,_pollCtxTxt:""};\n' +
+  /* credenciais do dono: sessionStorage (morre com a aba), NUNCA disco. Migra
+     uma vez o que estava em localStorage e apaga de lá (PC compartilhado não
+     pode ficar com email+senha do dono gravados). */
+  'function lsGet(k){ try{ var v=sessionStorage.getItem(k); if(v!=null) return v; }catch(e){} try{ var w=localStorage.getItem(k); if(w!=null){ try{sessionStorage.setItem(k,w);}catch(e){} try{localStorage.removeItem(k);}catch(e){} return w; } }catch(e){} return ""; }\n' +
+  'function lsSet(k,v){ try{ sessionStorage.setItem(k,String(v)); }catch(e){} try{ localStorage.removeItem(k); }catch(e){} }\n' +
+  'function loadCreds(){ return {email:lsGet(LS_EMAIL),pass:lsGet(LS_PASS)}; }\n' +
+  'function dayKey(d){ try{ var t=(d instanceof Date)?d:new Date(); function p(n){ n=String(n); return n.length<2?"0"+n:n; } return t.getFullYear()+"-"+p(t.getMonth()+1)+"-"+p(t.getDate()); }catch(e){ return "d"; } }\n' +
+  'var __angKv=null;\n' +
+  'function __angKvGet(){ try{ if(window.__angiruTestKv) return window.__angiruTestKv; if(__angKv) return __angKv; if(typeof window!=="undefined"&&typeof window.zunKV==="function") __angKv=window.zunKV("angiru"); else if(typeof root!=="undefined"&&root.kv&&root.kv.angiru) __angKv=root.kv.angiru; }catch(e){} return __angKv; }\n' +
+  'async function kget(k,d){ try{ var f=__angKvGet(); if(!f) return d; var v=await f.get(k); return (v===undefined||v===null)?d:v; }catch(e){ return d; } }\n' +
+  'async function kset(k,v){ try{ var f=__angKvGet(); if(!f) return; await f.set(k,v); }catch(e){} }\n' +
+  'async function log(m){ try{ m=String(m); var a=await kget("log",[]); if(!Array.isArray(a)) a=[]; var hh=""; try{ hh=new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}); }catch(e){} a.push("["+hh+"] "+m); if(a.length>100) a=a.slice(-100); await kset("log",a); try{ var el=document.getElementById("angLog"); if(el) el.textContent=a.slice(-8).join("\\n"); }catch(e){} }catch(e){} }\n' +
+  'var ANG=[\n' +
+  ' "boas-vindas leve: apresente a rede de um jeito simpatico e convide a participar",\n' +
+  ' "bastidor: conte algo legal que rolou na rede e puxe assunto",\n' +
+  ' "pergunta aberta: faca uma pergunta simples que rende resposta",\n' +
+  ' "comunidades: sugira um tema ou comunidade e chame gente interessada",\n' +
+  ' "nostalgia anos 2000: lembranca divertida da epoca do orkut",\n' +
+  ' "recado util: avise de novidade ou chame para conversar"\n' +
+  '];\n' +
+  'var SLOTS=[{h:9,k:"m",label:"manh\\u00e3"},{h:15,k:"t",label:"tarde"},{h:21,k:"n",label:"noite"}];\n' +
+  'var REACTS=["like","love","haha","wow"];\n';
 async function unlockWith(password, fileText){
   var pw = String(password||"").trim();
   if(!pw) throw new Error("digite a chave");
@@ -40,16 +71,27 @@ async function unlockWith(password, fileText){
   }
   var code = new TextDecoder().decode(pt);
   if(code.indexOf("zunzumAngiru")<0) throw new Error("conteudo invalido: nao e o modulo do dono");
+  // base pública + corpo criptografado rodam no MESMO script, isolados num
+  // escopo próprio: a base define kget/kset/$/S/log/ANG/SLOTS/REACTS/etc que
+  // o corpo usa, sem vazar nada p/ a página (a página já tem p.ex. `const REACTS`).
+  code = "(function(){\n\"use strict\";\n" + ANGIRU_BASE + "\n" + code + "\n})();\n";
   var url = URL.createObjectURL(new Blob([code], {type:"text/javascript"}));
-  await new Promise(function(res, rej){
-    var s = document.createElement("script");
-    s.src = url;
-    s.onload = function(){ res(); };
-    s.onerror = function(){ rej(new Error("falha ao executar o modulo")); };
-    document.body.appendChild(s);
-  });
+  var loadErr = null;
+  function onLoadErr(e){ try{ if(e && e.message) loadErr = String(e.message).slice(0,200); else if(typeof e==="string") loadErr = e.slice(0,200); }catch(_){} }
+  window.addEventListener("error", onLoadErr);
+  try{
+    await new Promise(function(res, rej){
+      var s = document.createElement("script");
+      s.src = url;
+      s.onload = function(){ res(); };
+      s.onerror = function(){ rej(new Error("falha ao executar o modulo")); };
+      document.body.appendChild(s);
+    });
+  }finally{
+    try{ window.removeEventListener("error", onLoadErr); }catch(_){}
+  }
   window.zunzumAngiruLoaded = !!window.zunzumAngiru;
-  if(!window.zunzumAngiruLoaded) throw new Error("modulo executou mas nao ativou (zunzumAngiru ausente)");
+  if(!window.zunzumAngiruLoaded) throw new Error("modulo executou mas nao ativou (zunzumAngiru ausente)" + (loadErr ? " — causa: " + loadErr : ""));
   return true;
 }
 window.zunzumAngiruUnlock = unlockWith;

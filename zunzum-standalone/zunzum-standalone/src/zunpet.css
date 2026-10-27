@@ -1,0 +1,92 @@
+/* zunpet — bichinho virtual estilo Pou (camada superior) */
+#zunPetLayer{position:fixed;inset:0;pointer-events:none;z-index:200000;font-family:Verdana,Arial,sans-serif}
+#zunPetLayer button{font-family:inherit}
+.zunpet-eggWrap,.zunpet-petWrap{position:fixed;pointer-events:auto;user-select:none;-webkit-user-select:none;touch-action:none}
+.zunpet-eggWrap{width:110px;text-align:center;cursor:grab;filter:drop-shadow(0 6px 10px rgba(0,0,0,.25))}
+.zunpet-egg{font-size:64px;line-height:1;animation:zunEggWob 2.2s ease-in-out infinite;transform-origin:50% 90%}
+.zunpet-egg svg{width:64px;height:76px;display:block;margin:0 auto}
+.zunpet-egg.crack{animation:zunEggShake .5s ease-in-out infinite}
+@keyframes zunEggWob{0%,100%{transform:rotate(-6deg) scale(1)}25%{transform:rotate(5deg) scale(1.03)}50%{transform:rotate(-3deg) scale(1)}75%{transform:rotate(4deg) scale(1.02)}}
+@keyframes zunEggShake{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+.zunpet-eggTimer{background:#fff;border:2px solid #6aa5d7;border-radius:999px;font-size:11px;padding:2px 8px;color:#33507a;margin-top:4px;display:inline-block;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.zunpet-eggHint{font-size:10px;color:#fff;background:rgba(51,80,122,.85);border-radius:8px;padding:2px 6px;margin-top:4px;display:inline-block}
+/* ==== rostinho ==== */
+.zunpet-petWrap{width:120px;text-align:center;cursor:grab}
+.zunpet-bubble{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);background:#fff;border:2px solid #33507a;color:#33507a;border-radius:14px;padding:6px 10px;font-size:12px;white-space:nowrap;margin-bottom:10px;box-shadow:0 4px 12px rgba(0,0,0,.2);animation:zunBubPop .25s ease-out;max-width:220px;white-space:normal;width:max-content;max-width:200px;text-align:center}
+.zunpet-bubble:after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:7px solid transparent;border-top-color:#33507a}
+@keyframes zunBubPop{from{transform:translateX(-50%) scale(.6);opacity:0}to{transform:translateX(-50%) scale(1);opacity:1}}
+.zunpet-body{width:104px;height:104px;margin:0 auto;position:relative;transition:transform .15s;animation:zunBreathe 3s ease-in-out infinite;filter:drop-shadow(0 8px 10px rgba(60,35,10,.35))}
+.zunpet-body svg{width:100%;height:100%;display:block;overflow:visible;transform-origin:50% 100%}
+.zunpet-body .e-open{transform-box:fill-box;transform-origin:center;animation:zunBlink 3.8s ease-in-out infinite}
+@keyframes zunBlink{0%,93%,100%{transform:scaleY(1)}95.5%{transform:scaleY(.06)}98%{transform:scaleY(1)}}
+.zunpet-body .drool{animation:zunDrool 1.1s ease-in-out infinite}
+@keyframes zunDrool{0%,100%{opacity:.9}50%{opacity:.3}}
+@keyframes zunBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.03,1.05)}}
+.zunpet-petWrap.jumping .zunpet-body{animation:zunJump .55s ease}
+@keyframes zunJump{0%{transform:translateY(0) scale(1)}30%{transform:translateY(-34px) scale(.95,1.08)}60%{transform:translateY(0) scale(1.08,.9)}100%{transform:translateY(0) scale(1)}}
+.zunpet-petWrap.happy .zunpet-body{animation:zunHappyBounce .8s ease infinite}
+@keyframes zunHappyBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.zunpet-body .m{transform-box:fill-box;transform-origin:center}
+.zunpet-petWrap.mood-happy .m-happy{animation:zunMouthPulse 2.2s ease-in-out infinite}
+@keyframes zunMouthPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08,1.14)}}
+.zunpet-petWrap.talking svg .m{animation:zunTalk .26s ease-in-out infinite}
+@keyframes zunTalk{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.5)}}
+.zunpet-petWrap{transition:transform .3s ease}
+.zunpet-petWrap.tilt{transform:rotate(7deg)}
+.zunpet-petWrap.tiltL{transform:rotate(-7deg)}
+.zunpet-petWrap.walking .zunpet-body{animation:zunWaddle .45s ease-in-out infinite}
+.zunpet-petWrap.chasing .zunpet-body{animation:zunWaddle .38s ease-in-out infinite}
+@keyframes zunWaddle{0%,100%{transform:rotate(-10deg) translateY(0)}50%{transform:rotate(10deg) translateY(-7px)}}
+.zunpet-face-old{display:none}
+.zunpet-dirt{position:absolute;inset:6px;pointer-events:none}
+.zunpet-dirt i{position:absolute;background:rgba(70,45,20,.55);border-radius:50%}
+.zunpet-flies{position:absolute;inset:-14px;pointer-events:none;animation:zunSpin 4s linear infinite}
+.zunpet-flies span{position:absolute;font-size:12px}
+.zunpet-flies svg{width:14px;height:14px;display:block}
+@keyframes zunSpin{to{transform:rotate(360deg)}}
+.zunpet-outfit{position:absolute;left:50%;transform:translateX(-50%);pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
+.zunpet-outfit svg{width:100%;height:100%;display:block;overflow:visible}
+.zunpet-outfit.of1{top:-32px;width:62px;height:48px}
+.zunpet-outfit.of2{top:-26px;width:66px;height:46px}
+.zunpet-outfit.of3{top:-18px;width:52px;height:38px}
+.zunpet-outfit.of4{top:32px;width:106px;height:32px} /* óculos: em cima dos olhos, não do coco */
+.zunpet-outfit.of5{top:-34px;width:64px;height:48px}
+.zunpet-outfit.of6{top:0;width:118px;height:78px} /* fone: abraça a cabeça inteira */
+.zunpet-outfit.of7{top:-36px;width:56px;height:46px;transform:translateX(-50%) rotate(9deg)}
+.zunpet-outfit.of8{top:72px;width:88px;height:42px} /* pochete: na barriguinha, abaixo da boca */
+.zunpet-shadow{width:70px;height:12px;background:rgba(0,0,0,.2);border-radius:50%;margin:4px auto 0}
+.zunpet-miniBars{display:flex;gap:3px;justify-content:center;margin-top:4px}
+.zunpet-miniBars i{width:26px;height:6px;border-radius:4px;background:#ddd;overflow:hidden;position:relative;display:block}
+.zunpet-miniBars i b{display:block;height:100%;border-radius:4px}
+.zunpet-close{position:absolute;top:-8px;right:-2px;width:22px;height:22px;border-radius:50%;border:2px solid #fff;background:#d33;color:#fff;font-size:12px;line-height:1;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.3);padding:0}
+.zunpet-houseBtn{position:absolute;bottom:-6px;right:-6px;width:30px;height:30px;border-radius:50%;border:2px solid #fff;background:#6aa5d7;font-size:15px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+/* ==== comidinhas e bola ==== */
+.zunpet-food{position:fixed;pointer-events:auto;font-size:34px;cursor:grab;filter:drop-shadow(0 4px 6px rgba(0,0,0,.3));animation:zunFoodFloat 2s ease-in-out infinite;z-index:200001}
+.zunpet-food svg{width:36px;height:36px;display:block}
+@keyframes zunFoodFloat{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-8px) rotate(5deg)}}
+.zunpet-ball{position:fixed;pointer-events:auto;font-size:36px;cursor:grab;filter:drop-shadow(0 4px 6px rgba(0,0,0,.3));z-index:200001;transition:transform .1s}
+.zunpet-ball svg{width:36px;height:36px;display:block}
+.zunpet-particle{position:fixed;pointer-events:none;font-size:18px;z-index:200003;animation:zunPart 1s ease-out forwards}
+@keyframes zunPart{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(-46px) scale(1.3)}}
+.zunpet-shower{position:fixed;pointer-events:none;font-size:30px;z-index:200002;animation:zunShower 1.6s ease-in forwards}
+@keyframes zunShower{0%{opacity:0;transform:translateY(-20px)}20%{opacity:1}100%{opacity:0;transform:translateY(30px)}}
+/* ==== casinha ==== */
+#zunPetHouse{position:fixed;right:10px;bottom:10px;width:250px;background:#fffdf6;border:3px solid #a67c52;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.35);pointer-events:auto;z-index:200002;overflow:hidden}
+#zunPetHouse .zphHead{background:linear-gradient(#c99a63,#a67c52);color:#fff;padding:8px 10px;font-weight:bold;font-size:14px;display:flex;align-items:center;gap:6px}
+#zunPetHouse .zphHead:before{content:"🏠"}
+#zunPetHouse .zphHead button{margin-left:auto;background:rgba(255,255,255,.25);border:0;color:#fff;border-radius:6px;cursor:pointer;padding:2px 8px}
+#zunPetHouse .zphBody{padding:10px}
+.zphStats{font-size:12px;margin-bottom:8px}
+.zphRow{display:flex;align-items:center;gap:6px;margin:4px 0}
+.zphRow span{width:64px;flex:none}
+.zphBar{flex:1;height:10px;background:#eee;border-radius:6px;overflow:hidden;border:1px solid #ccc}
+.zphBar b{display:block;height:100%;border-radius:6px;transition:width .4s}
+.zphGrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.zphGrid button{border:2px solid #a67c52;background:#fff8ec;border-radius:10px;padding:8px 4px;font-size:12px;cursor:pointer}
+.zphGrid button:hover{background:#ffe9c4}
+.zphGrid button:active{transform:scale(.96)}
+.zphFoot{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.zphFoot label{font-size:11px;display:flex;gap:6px;align-items:center;cursor:pointer}
+.zphFoot .zphDanger{background:#ffecec;border:1px solid #d33;color:#a00;border-radius:8px;padding:6px;cursor:pointer;font-size:12px}
+#zunPetTopBtn{border:2px solid #ffb300 !important;background:#fff8e1 !important}
+@media(max-width:600px){#zunPetHouse{left:10px;right:10px;width:auto}.zunpet-petWrap{transform-origin:bottom center}}

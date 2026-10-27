@@ -1,5 +1,5 @@
 (function(){
-function base(){ return (window.ZUNZUM_BASE||"https://perchance.org/zunzum"); }
+function base(){ return "https://perchance.org/"+(window.generatorName||"zunzum"); }
 function cleanRef(s){ s = String(s||"").replace(/^@/,"").trim().slice(0,20); return /^[A-Za-z0-9-_]{2,20}$/.test(s) ? s : ""; }
 function getRef(){
   var r = "";
@@ -19,7 +19,8 @@ function getRef(){
 function myNick(){
   try{
     if(window.me && window.me.nick) return window.me.nick;
-    var m = JSON.parse(localStorage.getItem("orkutSession")||"null");
+    var raw = null; try{ raw = sessionStorage.getItem("orkutSession")||localStorage.getItem("orkutSession"); }catch(e){ raw = null; }
+    var m = JSON.parse(raw||"null");
     return m && m.nick ? m.nick : "";
   }catch(e){ return ""; }
 }
@@ -154,9 +155,10 @@ async function gen(){
   };
   var prompt="Voce divulga a rede social anonima brasileira ZUNZUM: feed anonimo sem conta, chat publico e privado com nick+senha simples, sem email, gratis. Escreva "+(estilos[estilo]||estilos[forum])+" em portugues informal brasileiro, tom amigavel, sem spam, sem prometer o que nao existe. Inclua o link "+myLink()+" no final. Responda SO com o texto pronto para colar.";
   try{
-    var r=await root.generateText({instruction:prompt});
+    try{ if(window.ZunAiQuota && !window.ZunAiQuota.tryTake("text")){ T.value="cota de IA de hoje esgotada — tente amanhã."; G.disabled=false; return; } }catch(_q){}
+    var r=await zunText({instruction:prompt});
     T.value=String(r||"").trim()||"Tente de novo em segundos.";
-  }catch(e){ T.value="Falhou — tente de novo em segundos."; }
+  }catch(e){ T.value=(e && (e.code==="ai-quota" || /ai-quota/.test(String((e&&e.message)||""))))?"cota de IA de hoje esgotada — tente amanhã.":"Falhou — tente de novo em segundos."; }
   G.disabled=false;
 }
 async function copyTxt(){
