@@ -1,0 +1,157 @@
+/* zuncaptcha — visual próprio do slider humano (abelhinha).
+   Carregado via <link> no index.html, DEPOIS do <style> principal, então vence
+   sem !important no DIA (perde p/ festa/healer/tema de propósito, igual ao neo).
+   NOITE com !important + :not([data-zunfesta]) (ganha do noturno/espelho, some
+   na festa). FESTA veste var(--zf-*) com fallback bunny (recolore sozinha).
+   Estático, sem JS p/ pintar: o JS só troca data-state e posições. */
+
+.zuncap{
+  margin-top:6px;
+  max-width:340px;
+  box-sizing:border-box;
+  border:2px solid #111;
+  border-radius:12px;
+  padding:10px;
+  background:#FFF7FB;
+  color:#111;
+  box-shadow:4px 4px 0 #E664AE;
+  text-align:left;
+  font-family:Verdana,Arial,sans-serif;
+}
+.zuncap-lab{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:12px;
+  font-weight:bold;
+  color:#111;
+  margin-bottom:8px;
+  line-height:1.4;
+}
+.zuncap-lab svg{flex:none}
+.zuncap-track{
+  position:relative;
+  height:46px;
+  border:2px solid #111;
+  border-radius:999px;
+  background:#fff;
+  overflow:hidden;
+  cursor:grab;
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+  box-shadow:inset 2px 2px 0 rgba(0,0,0,.08);
+}
+.zuncap-track:focus-visible{outline:3px solid #2E6BFF;outline-offset:2px}
+.zuncap-track[data-locked="1"]{cursor:default}
+.zuncap-fill{
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:0;
+  background:linear-gradient(180deg,#FFDD00 0%,#FFB300 100%);
+  border-right:2px solid #111;
+  pointer-events:none;
+}
+.zuncap-hint{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  font-size:12px;
+  font-weight:bold;
+  color:#5c2440;
+  background:transparent;
+  pointer-events:none;
+  white-space:nowrap;
+  overflow:hidden;
+  padding:0 52px 0 12px;
+  transition:opacity .18s ease;
+}
+.zuncap-track[data-pos="drag"] .zuncap-hint{opacity:0}
+.zuncap-thumb{
+  position:absolute;
+  top:3px;left:3px;
+  width:38px;height:36px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#FFDD00;
+  color:#111;
+  border:2px solid #111;
+  border-radius:50%;
+  box-shadow:2px 2px 0 #111;
+  cursor:grab;
+  padding:0;
+  touch-action:none;
+  transition:left .12s ease;
+}
+.zuncap-thumb:active{cursor:grabbing}
+.zuncap-thumb svg{display:block;pointer-events:none}
+.zuncap-track[data-locked="1"] .zuncap-thumb{cursor:default}
+/* arrasto: sem transição p/ seguir o dedo */
+.zuncap-track[data-pos="drag"] .zuncap-thumb{transition:none}
+/* minerando: listras animadas no trilho + polegar parado */
+.zuncap[data-state="mining"] .zuncap-fill{
+  background:repeating-linear-gradient(45deg,#FFDD00 0 12px,#FFB300 12px 24px);
+  animation:zuncapSlide 1s linear infinite;
+}
+@keyframes zuncapSlide{to{background-position:34px 0}}
+.zuncap[data-state="mining"] .zuncap-thumb{cursor:wait}
+.zuncap[data-state="mining"] .zuncap-hint{opacity:0}
+/* verificado: trilho cheio verde + polegar check */
+.zuncap[data-state="ok"] .zuncap-fill{background:#1c8a3c;border-right-color:#111}
+.zuncap[data-state="ok"] .zuncap-thumb{background:#1c8a3c;color:#fff;border-color:#111}
+.zuncap[data-state="ok"] .zuncap-hint{opacity:0}
+.zuncap-msg{
+  font-size:12px;
+  margin-top:6px;
+  min-height:16px;
+  line-height:1.5;
+  color:#33507a;
+  word-break:break-word;
+}
+.zuncap[data-state="mining"] .zuncap-msg{font-weight:bold;font-size:13px;color:#111}
+.zuncap[data-state="ok"] .zuncap-msg{color:#1c8a3c;font-weight:bold}
+.zuncap-redo{
+  margin-top:6px;
+  font-size:12px;
+  background:#fff;
+  color:#111;
+  border:2px solid #111;
+  border-radius:8px;
+  box-shadow:2px 2px 0 #111;
+  font-weight:bold;
+  cursor:pointer;
+  padding:3px 10px;
+}
+.zuncap-redo:active{transform:translate(2px,2px);box-shadow:none}
+@media(prefers-reduced-motion:reduce){
+  .zuncap-thumb{transition:none}
+  .zuncap[data-state="mining"] .zuncap-fill{animation:none}
+}
+
+/* ---------- NOITE (:not([data-zunfesta]) = na festa, some e a festa vence) ---------- */
+html body.zun-night:not([data-zunfesta]) .zuncap{background:#17143B!important;color:#E7C8E7!important;border-color:#FFDD00!important;box-shadow:4px 4px 0 #6A3E9A!important}
+html body.zun-night:not([data-zunfesta]) .zuncap-lab{color:#FFDD00!important}
+html body.zun-night:not([data-zunfesta]) .zuncap-track{background:#241a4d!important;border-color:#FFDD00!important}
+html body.zun-night:not([data-zunfesta]) .zuncap-fill{background:linear-gradient(180deg,#FFDD00 0%,#FFB300 100%)!important;border-right-color:#FFDD00!important}
+html body.zun-night:not([data-zunfesta]) .zuncap-hint{color:#E7C8E7!important}
+html body.zun-night:not([data-zunfesta]) .zuncap-thumb{background:#FFDD00!important;color:#111!important;border-color:#FFDD00!important;box-shadow:2px 2px 0 #FFDD00!important}
+html body.zun-night:not([data-zunfesta]) .zuncap-msg{color:#B9B9C9!important}
+html body.zun-night:not([data-zunfesta]) .zuncap[data-state="mining"] .zuncap-msg{color:#FFDD00!important}
+html body.zun-night:not([data-zunfesta]) .zuncap[data-state="ok"] .zuncap-msg{color:#7dffa8!important}
+html body.zun-night:not([data-zunfesta]) .zuncap[data-state="ok"] .zuncap-fill{background:#1c8a3c!important}
+html body.zun-night:not([data-zunfesta]) .zuncap[data-state="ok"] .zuncap-thumb{background:#1c8a3c!important;color:#fff!important;border-color:#FFDD00!important}
+html body.zun-night:not([data-zunfesta]) .zuncap-redo{background:#241a4d!important;color:#E7C8E7!important;border-color:#FFDD00!important;box-shadow:2px 2px 0 #FFDD00!important}
+
+/* ---------- FESTA: veste --zf-* (fundo/tinta/linha), fallback = bunny ---------- */
+html body[data-zunfesta] .zuncap{background:var(--zf-card,#4A227B)!important;color:var(--zf-ink,#E7C8E7)!important;border-color:var(--zf-line,#6A3E9A)!important;box-shadow:4px 4px 0 var(--zf-line,#6A3E9A)!important}
+html body[data-zunfesta] .zuncap-lab{color:var(--zf-ink,#E7C8E7)!important}
+html body[data-zunfesta] .zuncap-track{background:var(--zf-card,#4A227B)!important;border-color:var(--zf-line,#6A3E9A)!important}
+html body[data-zunfesta] .zuncap-fill{background:linear-gradient(180deg,var(--zf-ac,#C266A7) 0%,var(--zf-card,#4A227B) 100%)!important;border-right-color:var(--zf-line,#6A3E9A)!important}
+html body[data-zunfesta] .zuncap-hint{color:var(--zf-ink,#E7C8E7)!important}
+html body[data-zunfesta] .zuncap-thumb{background:var(--zf-ac,#C266A7)!important;color:var(--zf-on,#E7C8E7)!important;border-color:var(--zf-line,#6A3E9A)!important;box-shadow:2px 2px 0 var(--zf-line,#6A3E9A)!important}
+html body[data-zunfesta] .zuncap-msg{color:var(--zf-ink,#E7C8E7)!important}
+html body[data-zunfesta] .zuncap-redo{background:var(--zf-card,#4A227B)!important;color:var(--zf-ink,#E7C8E7)!important;border-color:var(--zf-line,#6A3E9A)!important;box-shadow:2px 2px 0 var(--zf-line,#6A3E9A)!important}

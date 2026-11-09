@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<!-- BACKUP do index.html DO ESPELHO (Neocities) — 2026-11-04, sync com o ar + social-cards (og:image/twitter).
+     2026-11-05d: zun-welcome.js saiu da tag direta e entrou na _lazyQueue logo após o tour.js (não fura mais a fila).
+     NÃO é o index do Perchance (workspace): tem <head> SEO próprio, alt-guard,
+     zunbase, zun-welcome e ordem de scripts do espelho. Se o index do espelho
+     for sobrescrito sem querer, suba ESTE arquivo como /index.html no Neocities.
+     Limpeza: removida 1 linha de script __CF$cv$params injetada pelo Cloudflare
+     na hora da captura (token temporário, não pertence ao arquivo). -->
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>zunzum — rede anônima estilo orkut anos 2000</title>
+<meta name="description" content="Zunzum, a rede da abelhinha 🐝: desabafe e fale da sua vida sem mostrar o rosto — feed livre, depoimentos e chat anônimo estilo Orkut 2000.">
+<meta http-equiv="content-language" content="pt-BR">
+<meta property="og:title" content="zunzum — rede anônima estilo orkut anos 2000">
+<meta property="og:description" content="Zunzum, a rede da abelhinha 🐝: desabafe e fale da sua vida sem mostrar o rosto — feed livre, depoimentos e chat anônimo estilo Orkut 2000.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://zunzum.neocities.org/">
+<meta property="og:image" content="https://zunzum.neocities.org/src/img/abelhinha-capa.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="abelhinha zunzum — logo da rede social anonima estilo orkut nostálgico anos 2000">
+<meta property="og:locale" content="pt_BR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="zunzum — rede anônima estilo orkut anos 2000">
+<meta name="twitter:description" content="Zunzum, a rede da abelhinha 🐝: desabafe e fale da sua vida sem mostrar o rosto — feed livre, depoimentos e chat anônimo estilo Orkut 2000.">
+<meta name="twitter:image" content="https://zunzum.neocities.org/src/img/abelhinha-capa.png">
+<link rel="canonical" href="https://zunzum.neocities.org/">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https: data: blob:; media-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' https://esm.sh https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https: wss:; frame-src https://www.youtube.com https://www.youtube-nocookie.com; font-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'">
+<link rel="manifest" href="src/manifest.webmanifest">
+<meta name="theme-color" content="#6aa5d7">
+</head>
+<body>
+<script>
+window.generatorName = "zunzum";
+window.root = {
+  kv: null, superFetch: null, generateText: null,
+  commentsPlugin: function(){ return ""; },
+  uploadPlugin: { editable: {
+    get: async function(){ return null; },
+    set: async function(){ return { error: "standalone-off" }; }
+  } }
+};
+</script>
+<script>
+/* alt-guard: garante alt em toda imagem injetada via JS (avatares, posts). */
+(function(){function fix(r){try{var q=r&&r.querySelectorAll?r.querySelectorAll("img:not([alt])"):[];for(var i=0;i<q.length;i++){var im=q[i],a="";try{if(im.closest&&(im.closest(".miniAv")||im.closest("#avatarEl")||im.closest("#profAvatar")||im.closest(".uav")||im.closest("#pubPhotoEl")))a="avatar de usu\u00e1rio do zunzum";else if(im.closest&&(im.closest(".post")||im.closest(".pbody")||im.closest(".freply")))a="imagem publicada no feed do zunzum";else if(im.id==="searchPreview")a="pr\u00e9-visualiza\u00e7\u00e3o do resultado da busca";}catch(e){}try{im.setAttribute("alt",a);}catch(e){}}}catch(e){}}
+try{fix(document);if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",function(){fix(document);});var o=new MutationObserver(function(ms){for(var k=0;k<ms.length;k++){var m=ms[k];for(var j=0;j<m.addedNodes.length;j++){var n=m.addedNodes[j];if(!n||n.nodeType!==1)continue;if(n.tagName==="IMG"){fix(n.parentNode||document);}else if(n.querySelectorAll)fix(n);}}});o.observe(document.documentElement,{childList:true,subtree:true});}catch(e){}})();
+</script>
+
+<!-- SEM CSP meta de propósito: o app usa inline scripts + blob workers
+  (uma CSP útil exigiria 'unsafe-inline' mesmo assim). server-plugin removido
+  no re-seal r2 (2026-10-26) — backend único: Supabase. A proteção real está na
+  sanitização (zunfix/cleanRoomTheme/okUrlStrict etc). Para o standalone
+  GitHub, prefira header CSP no servidor. -->
+<style>
+[hidden]{display:none!important}
+body{text-align:left;margin:0;font-family:Verdana,Arial,sans-serif;background:#d9e6f2}
+#top{background:#6aa5d7;color:#fff;padding:8px 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#top .top-brand{flex:1 1 auto;min-width:0}
+#top h1{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#topBtns{display:flex;gap:6px;align-items:center;flex:none;flex-wrap:wrap}
+#topBtns button{flex:none}
+#top b{font-size:20px}
+#top .meta{color:#eaf3fb;font-size:12px}
+#wrap{max-width:1100px;margin:10px auto;padding:0 10px;display:grid;grid-template-columns:230px minmax(0,1fr) 320px;gap:10px;align-items:start;box-sizing:border-box}
+#seoBox{max-width:1100px;margin:0 auto 10px;padding:0 10px;box-sizing:border-box}
+#seoBox>.box{margin-bottom:10px}
+#seoBox>.box:last-child{margin-bottom:0}
+#seoEN,#seoES{max-width:1100px;margin:0 auto 10px;padding:10px;box-sizing:border-box}
+@media(max-width:900px){#wrap{grid-template-columns:1fr}}
+.box{background:#fff;border:1px solid #b6c9db;border-radius:8px;padding:10px;margin-bottom:10px}
+.box h3{background:#e8eef7;margin:-10px -10px 8px;padding:6px 10px;font-size:13px;color:#33507a;border-radius:8px 8px 0 0}
+.meta{font-size:12px;opacity:.7}
+#avatarEl{width:70px;height:70px;border-radius:8px;background:#6aa5d7;color:#fff;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:bold;overflow:hidden;flex:none}
+#avatarEl img{width:100%;height:100%;object-fit:cover}
+.miniAv{width:20px;height:20px;border-radius:50%;background:#6aa5d7;color:#fff;font-size:11px;font-weight:bold;display:inline-flex;align-items:center;justify-content:center;vertical-align:-5px;margin-right:4px;overflow:hidden;cursor:pointer;border:none;padding:0}
+/* avatar nunca veste botão de tema: o btnFix do tema do site (#wrap .box button)
+   e o da festa pintam todo button — sem isso o .miniAv vira um quadrado escuro.
+   Especificidade maior (ID + .miniAv) vence o btnFix com ou sem festa. */
+html body #wrap .box button.miniAv,html body #zunMPages .box button.miniAv,html body #topBtns button.miniAv{width:20px!important;height:20px!important;border-radius:50%!important;background:#6aa5d7!important;border:none!important;padding:0!important;margin-right:4px!important;box-shadow:none!important;filter:none!important;transform:none!important}
+.miniAv img{width:20px;height:20px;object-fit:contain}
+body .post .miniAv img{width:20px;height:20px;max-width:none;object-fit:contain;flex:none;border-radius:0}
+/* avatar carregando: pulso até onload/onerror (miniAv, avatarEl, pubPhotoEl, profAvatar) */
+.av-loading{animation:avPulse 1s ease-in-out infinite}
+@keyframes avPulse{50%{opacity:.3}}
+/* aba conta: foto e nick com cara de clicável (abrem o perfil) */
+#avatarEl.me-open{transition:transform .15s ease, box-shadow .15s ease}
+#avatarEl.me-open:hover{transform:scale(1.06);box-shadow:0 0 0 3px #fff,0 0 0 5px #f90}
+/* efeito de avatar (FASE 14): anel AO REDOR da foto (não por cima).
+   O .avfx é absolute com inset NEGATIVO (fora da caixa) + a caixa precisa ser
+   positioned. Quando há efeito, a caixa vai p/ overflow:visible (regra :has
+   abaixo) senão o anel externo seria cortado; a foto continua redonda porque
+   o img tem border-radius:inherit (antes o arredondado vinha do
+   overflow:hidden do pai cortando um img quadrado — regra body .post .miniAv
+   img com border-radius:0 foi sobrescrita abaixo).
+   FIX vazamento no feed/chat (2026-10-28): sem position:relative o anel
+   escapava p/ o ancestral posicionado e virava um oval gigante (752x462). */
+.miniAv,#avatarEl,#pubPhotoEl,#profAvatar{position:relative}
+.miniAv img,#avatarEl img,#pubPhotoEl img,#profAvatar img,.uav img,.zun-dm-av img,.zun-fav img{border-radius:inherit}
+body .post .miniAv img{border-radius:inherit}
+.miniAv:has(.avfx),#avatarEl:has(.avfx),#pubPhotoEl:has(.avfx),#profAvatar:has(.avfx),.uav:has(.avfx),.zun-dm-av:has(.avfx),.zun-fav:has(.avfx){overflow:visible !important}
+.avfx{position:absolute;inset:-3px;border-radius:inherit;pointer-events:none;z-index:2}
+.avfx-neon{border:2px solid #7df9ff;box-shadow:0 0 8px #22d3ee,0 0 2px #fff;animation:avfxPulse 1.6s ease-in-out infinite}
+.avfx-neonrosa{border:2px solid #ff7ae0;box-shadow:0 0 8px #f0f,0 0 2px #fff;animation:avfxPulse 1.6s ease-in-out infinite}
+.avfx-ouro{border:2px solid #ffd700;box-shadow:0 0 10px #ffb700,0 0 3px #fff7cc;animation:avfxPulse 2.4s ease-in-out infinite}
+.avfx-fogo{border:2px solid #ff7b00;animation:avfxFogo 1.1s ease-in-out infinite}
+.avfx-gelo{border:2px solid #bdf3ff;box-shadow:0 0 10px #67e8f9,0 0 3px #fff}
+.avfx-sombra{border:4px solid rgba(0,0,0,.72);box-shadow:0 0 8px #000}
+.miniAv .avfx-sombra{border-width:2px;box-shadow:0 0 3px rgba(0,0,0,.55)}
+.avfx-arcoiris{padding:2px;background:conic-gradient(#f00,#ff7b00,#ff0,#0c0,#0af,#a0f,#f00);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude;animation:avfxHue 4s linear infinite}
+@keyframes avfxPulse{50%{filter:brightness(1.35)}}
+@keyframes avfxFogo{0%,100%{box-shadow:0 0 6px #ff5a00,0 0 2px #ffd23f}50%{box-shadow:0 0 12px #ff2d00,0 0 5px #ffb700}}
+@keyframes avfxHue{to{filter:hue-rotate(360deg)}}
+#profModal{position:fixed;inset:0;background:rgba(20,40,70,.5);display:flex;align-items:flex-start;justify-content:center;padding:0;z-index:60;overflow-y:auto}
+#profCard{background:#fff;border-radius:0;padding:14px;max-width:860px;width:100%;min-height:100vh;box-sizing:border-box;text-align:left}
+#profPg{width:100%;border:1px solid #b6c9db;border-radius:8px;min-height:200px;margin-top:8px}
+#profPg iframe{width:100%;min-height:200px;border:0;border-radius:8px;display:block}
+#profOwnerBox{border:1px dashed #b6c9db;border-radius:8px;padding:8px;margin-top:8px;font-size:13px}
+#profAvatar{width:90px;height:90px;border-radius:12px;background:#6aa5d7;color:#fff;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:bold;overflow:hidden}
+#profAvatar img{width:100%;height:100%;object-fit:cover}
+#profMural h3{font-size:13px;color:#33507a;margin:8px 0 4px}
+button,input,select,textarea{font:inherit}
+input,select,textarea{width:100%;box-sizing:border-box}
+#feedCtn{max-height:62vh;overflow-y:auto;padding-right:4px}
+.post{background:#f4f8fd;border:1px solid #d9e6f2;border-radius:12px;padding:10px 12px;margin:10px 0;word-break:break-word;box-shadow:0 1px 3px rgba(51,80,122,.08)}
+.post img,.post video{max-width:100%;border-radius:8px}
+.phead{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.phead .who{min-width:0;flex:1;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.phead .chatname{font-size:14px}
+.ptime{font-size:11px;opacity:.6;white-space:nowrap}
+.pbody{font-size:14px;line-height:1.55;overflow-wrap:anywhere}
+.pbody img,.pbody video{margin-top:6px}
+.pfoot{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px}
+#wrap .post .pfoot button{border-radius:999px;padding:4px 12px}
+.freply{background:#fff;border:1px solid #d9e6f2;border-radius:10px;padding:7px 10px;margin-top:6px}
+.freply .frhead{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.freply .frhead .chatname{font-size:13px}
+.freply .frbody{font-size:13px;margin-top:2px;line-height:1.5;overflow-wrap:anywhere}
+.freply .fract{margin-top:5px;display:flex;gap:4px;flex-wrap:wrap}
+#wrap .post .freply button{border-radius:999px;font-size:11px;padding:2px 10px}
+body.zun-night .post{background:#23233a!important;border-color:#3a3a5c!important;box-shadow:none}
+body.zun-night .freply{background:#1e1e30!important;border-color:#3a3a5c!important}
+body.zun-night #wrap .post .pfoot button,body.zun-night #wrap .post .freply button{background:#2a2a45!important;color:#cfd2ff!important;border-color:#4a4a6c!important}
+.chatlog{max-height:300px;overflow-y:auto;border:1px solid #d9e6f2;border-radius:6px;padding:6px;margin-top:6px}
+.chatlog div{font-size:13px;padding:2px 0;border-bottom:1px dotted #eee;word-break:break-word}
+.mention{background:#fff3c4;border-radius:4px;padding:0 3px;font-weight:bold}
+.mention-me{background:#ffdf7e;border-radius:4px;padding:0 3px;font-weight:bold}
+.chatname{color:#33507a;font-weight:bold;cursor:pointer}
+.fbar{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;align-items:center}
+.fbar button{font-size:12px;padding:2px 7px;border:1px solid #b6c9db;background:#eef4fb;border-radius:5px;cursor:pointer}
+.fbar button b,.fbar button i{pointer-events:none}
+.fbar input[type=color]{width:28px;height:22px;padding:0;border:1px solid #b6c9db;background:#fff}
+.fbar input[type=file]{font-size:11px;max-width:150px}
+.fbar input.linkIn{font-size:11px;max-width:150px}
+.fbar select{font-size:12px;width:auto}
+.badge{display:inline-block;min-width:18px;text-align:center;background:#d33;color:#fff;border-radius:9px;font-size:11px;padding:1px 5px;margin-left:6px}
+.chatfile{max-width:100%;border-radius:6px}
+#pubFlip{perspective:1400px}
+#pubFlipInner{transition:transform .25s ease}
+.pubHead{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+#pubPhotoEl{width:40px;height:40px;border-radius:8px;background:#6aa5d7;color:#fff;font-weight:bold;font-size:20px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:none}
+#pubPhotoEl img{width:100%;height:100%;object-fit:cover}
+#pubNameEl{font-weight:bold;color:#33507a;font-size:14px;word-break:break-word}
+#pubTopicsBar{display:flex;gap:4px;flex-wrap:wrap;margin:6px 0}
+#pubTopicsBar button{font-size:12px;padding:2px 8px;border:1px solid #b6c9db;background:#eef4fb;border-radius:12px;cursor:pointer;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#pubTopicsBar button.on{background:#33507a;color:#fff;border-color:#33507a}
+#pubGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;max-height:320px;overflow-y:auto;margin-top:8px}
+.pubCard{border:1px solid #b6c9db;border-radius:8px;padding:8px;text-align:left;background:#f6faff;cursor:pointer;font-size:12px}
+.pubCard.cur{border-color:#33507a;box-shadow:0 0 0 2px #33507a33}
+.pubCard img{width:100%;height:80px;object-fit:cover;border-radius:6px;background:#d9e6f2;display:block}
+.pubCard .t{font-weight:bold;font-size:13px;color:#33507a;margin-top:4px;word-break:break-word}
+.pubCard .d{font-size:11px;opacity:.75;word-break:break-word}
+.msgDel{font-size:11px;margin-left:6px;border:1px solid #b6c9db;background:#fff;border-radius:4px;cursor:pointer;padding:0 5px}
+#pubModPanel,#pubCreateForm{border:1px dashed #b6c9db;border-radius:8px;padding:8px;margin-top:8px;font-size:13px}
+#pubModPanel input,#pubCreateForm input,#pubCreateForm textarea{margin:2px 0}
+.chatimg{max-width:140px;border-radius:6px;display:block;margin-top:4px}
+.zz-blur{filter:blur(10px)!important;pointer-events:none;user-select:none}
+.zz-hide{display:none!important}
+.zz-flt{position:relative}
+.zz-fltbar{display:flex;gap:6px;align-items:center;font-size:12px;background:#2b2b2b;color:#fff;border-radius:6px;padding:4px 8px;margin:4px 0}
+.zz-fltbar button{font-size:11px;padding:2px 8px;border:1px solid #fff;background:#444;color:#fff;border-radius:5px;cursor:pointer}
+.zz-pendbar{display:flex;gap:6px;align-items:center;font-size:12px;background:#3a4a6b;color:#fff;border-radius:6px;padding:4px 8px;margin:4px 0}
+.fltTglLbl{font-size:11px;font-weight:normal;float:right;cursor:pointer;white-space:nowrap}
+.fltModeSel{font-size:11px;padding:0 4px;border:1px solid #b6c9db;border-radius:5px;background:#fff;max-width:110px}
+.onDot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#2ecc40;margin-left:4px;vertical-align:middle}
+.miniAv.on{box-shadow:0 0 0 2px #2ecc40}
+#infoList{font-size:12px;line-height:1.7}
+/* src/notfound/ canonical: src/notfound/card.css */
+#notfoundModal{position:fixed;inset:0;background:rgba(20,40,70,.55);display:flex;align-items:flex-start;justify-content:center;padding:12vh 12px;z-index:90}
+#notfoundModal .nfCard{background:#fff;border-radius:12px;padding:18px;max-width:420px;width:100%;text-align:center;box-shadow:0 8px 30px #0006}
+#notfoundModal .nfIcon{font-size:44px}
+#notfoundModal .nfTitle{font-weight:bold;font-size:17px;color:#33507a;margin:6px 0}
+#notfoundModal .nfMsg{font-size:13px;color:#444;margin-bottom:12px;word-break:break-word}
+#notfoundModal .nfRow{display:flex;gap:6px;justify-content:center}
+#searchModal{position:fixed;inset:0;background:rgba(20,40,70,.5);display:flex;align-items:flex-start;justify-content:center;padding:8vh 12px;z-index:50}
+#searchCard{background:#fff;border-radius:10px;padding:12px;max-width:520px;width:100%;max-height:70vh;overflow-y:auto;text-align:left}
+#searchOut{white-space:pre-wrap;font-size:13px;margin-top:8px}
+#searchPreview{max-width:100%;max-height:180px;border-radius:8px;display:block;margin-top:8px}
+.s-photo{border:1px solid #d9e6f2;border-left:4px solid #7a4fc9;border-radius:6px;padding:8px;margin-bottom:10px;font-size:13px;background:#faf6ff}
+.s-photo img{max-width:100%;max-height:160px;border-radius:6px;display:block;margin-bottom:6px}
+.spin{display:inline-block;width:12px;height:12px;border:2px solid #b6c9db;border-top-color:#33507a;border-radius:50%;animation:sp .8s linear infinite;vertical-align:-2px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.g-feat{border:1px solid #d9e6f2;border-left:4px solid #6aa5d7;border-radius:6px;padding:8px;margin-bottom:10px;font-size:13px;background:#f6faff}
+.g-t{color:#1a0dab;font-size:15px;text-decoration:none;display:block;line-height:1.35}
+.g-u{color:#006621;font-size:12px;word-break:break-all}
+.g-d{color:#545454;font-size:13px;margin:2px 0 0}
+.g-v{color:#137333;font-size:12px}
+#searchLinks .g-item{display:block;text-align:left;margin:0 0 12px;padding:0}
+#searchLinks .g-item:last-child{margin-bottom:0}
+#searchCard input{width:auto;min-width:0}
+#searchCard #searchInput,#searchCard #searchAnswerInput{flex:1 1 auto}
+#searchCard #searchFileRow{flex-direction:column;align-items:stretch}
+#searchCard #searchFile,#searchCard #searchLink{width:100%;flex:none}
+#searchBoxRow{position:relative}
+#searchSug{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #b6c9db;border-top:0;border-radius:0 0 8px 8px;z-index:5;max-height:220px;overflow-y:auto;box-shadow:0 6px 16px rgba(20,40,70,.2)}
+#searchSug div{padding:6px 10px;font-size:13px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#searchSug div.sel,#searchSug div:hover{background:#e8eef7}
+#divulgarModal{position:fixed;inset:0;background:rgba(20,40,70,.5);display:flex;align-items:flex-start;justify-content:center;padding:8vh 12px;z-index:50}
+#divulgarCard{background:#fff;border-radius:10px;padding:12px;max-width:520px;width:100%;max-height:75vh;overflow-y:auto;text-align:left}
+/* botoes dos posts no modo normal (dia): antes herdavam o cinza outset padrao */
+#wrap .post button,#zunMPages .post button{background:#eef4fb;border:1px solid #b6c9db;color:#33507a;border-radius:6px;padding:3px 8px;cursor:pointer;font-size:12px}
+#wrap .post button:hover,#zunMPages .post button:hover{background:#dbe7f5}
+/* support-zunzum adaptativo — dia (amarelo correto) */
+#wrap .box .post[data-ann-post],#zunMPages .post[data-ann-post]{background:#fff8e1!important;border:2px solid #ffb300!important;border-radius:8px!important;padding:8px!important;box-shadow:0 2px 8px rgba(255,179,0,.35)!important;color:#3d2e00!important}
+#wrap .box .post[data-ann-post] .meta,#zunMPages .post[data-ann-post] .meta{color:#7a5c00!important;opacity:.9!important}
+#wrap .box .post[data-ann-post] .chatname,#zunMPages .post[data-ann-post] .chatname{color:#7a4a00!important}
+#wrap .box .post[data-ann-post] a,#zunMPages .post[data-ann-post] a{color:#8a5a00!important}
+#wrap .box .post[data-ann-post] button,#zunMPages .post[data-ann-post] button{background:#ffb300!important;color:#3d2e00!important;border:1px solid #c78d00!important;border-radius:6px!important}
+#wrap .box .post[data-ann-post] input,#zunMPages .post[data-ann-post] input,#wrap .box .post[data-ann-post] textarea,#zunMPages .post[data-ann-post] textarea{background:#fff!important;color:#3d2e00!important;border-color:#ffb300!important}
+#wrap .box .post[data-ann-post] .reactPick,#zunMPages .post[data-ann-post] .reactPick{background:#fff8e1!important;border-color:#ffb300!important}
+/* Zunzim IA — dia */
+#wrap .box .post[data-ai-post],#zunMPages .post[data-ai-post]{background:#f6faff!important;border:1px solid #d9e6f2!important;border-radius:6px!important;padding:6px!important}
+/* noite via classe body.zun-night (desktop + mobile): adapta sozinho ao alternar */
+body.zun-night #wrap .box .post[data-ann-post],body.zun-night #zunMPages .post[data-ann-post]{background:#3a2c07!important;color:#ffe9b0!important;border-color:#ffb300!important;box-shadow:0 2px 8px rgba(0,0,0,.5)!important}
+body.zun-night #wrap .box .post[data-ann-post] .meta,body.zun-night #zunMPages .post[data-ann-post] .meta{color:#ffd97a!important}
+body.zun-night #wrap .box .post[data-ann-post] .chatname,body.zun-night #zunMPages .post[data-ann-post] .chatname{color:#ffd97a!important}
+body.zun-night #wrap .box .post[data-ann-post] a,body.zun-night #zunMPages .post[data-ann-post] a{color:#ffd97a!important}
+body.zun-night #wrap .box .post[data-ann-post] button,body.zun-night #zunMPages .post[data-ann-post] button{background:#5a4308!important;color:#ffe9b0!important;border-color:#ffb300!important}
+body.zun-night #wrap .box .post[data-ann-post] input,body.zun-night #zunMPages .post[data-ann-post] input,body.zun-night #wrap .box .post[data-ann-post] textarea,body.zun-night #zunMPages .post[data-ann-post] textarea{background:#262640!important;color:#ffe9b0!important;border-color:#ffb300!important}
+body.zun-night #wrap .box .post[data-ann-post] .reactPick,body.zun-night #zunMPages .post[data-ann-post] .reactPick{background:#3a2c07!important;border-color:#ffb300!important}
+body.zun-night #wrap .box .post[data-ai-post],body.zun-night #zunMPages .post[data-ai-post]{background:#23233a!important;border-color:#3a3a5c!important}
+/* aviso de recorde adaptativo */
+#peakToast{background:#fff8e1!important;color:#222!important;border:2px solid #ffb300!important}
+body.zun-night #peakToast{background:#3a2c07!important;color:#ffe9b0!important;border-color:#ffb300!important}
+/* dj ia nasce oculto (desktop + celular): abre pelo botão DJ da barra */
+body.zun-hide-dj #djBar{display:none!important}/* webring nav clássico: ← nome → (inglês fixo, fora do dicionário i18n de propósito) */
+.zun-ring{text-align:center;margin-top:8px;font-size:15px;font-weight:bold}
+.zun-ring a{padding:0 8px;border-radius:6px}
+.zun-ring a:hover{background:#FFDD00;color:#111;text-decoration:none}
+</style>
+<style id="zunNeoCss">/* NEOBRUTALISMO (camada jovem: borda grossa + sombra dura + cor chapada).
+  Contrato de precedência (ver src/LAYOUT.md): DIA sem !important (perde de
+  propósito p/ tema do site, festa e correções do healer); NOITE com !important
+  + :not([data-zunfesta]) (ganha do noturno/espelho, some na festa, some com tema
+  do site porque o paintNight tira body.zun-night). Pares dia/noite com contraste
+  ≥4.5 — o healer (zunfix) não tem o que corrigir e fica quieto. Sem JS: zero risco de boot.
+  ANTI-CORRIDAS: nenhum seletor depende de classe que script injeta depois
+  (body.zun-tabs/zun-desk/zun-mobile só onde o próprio elemento já é dinâmico:
+  barra e topMenu). O CSS estático vale desde o parse — a 1ª passada do healer
+  (800ms/3000ms) sempre encontra contraste legível, sem marcar. */
+/* ---------- DIA ---------- */
+html body{background:#FFF4E0;color:#111}
+html body #top{background:#111;color:#fff;border-bottom:4px solid #FFDD00}
+html body #top .meta{color:#eaf3fb}
+html body #top button{background:#FFDD00;color:#111;border:2px solid #FFDD00;border-radius:6px;font-weight:bold}
+html body .box{background:#fff;border:2px solid #111;border-radius:8px;box-shadow:4px 4px 0 #111}
+html body .box h3{background:#FFDD00;color:#111;text-transform:uppercase;letter-spacing:.06em;border-bottom:2px solid #111}
+html body section[data-tab="chats"] .box h3{background:#FF90E8}
+html body section[data-tab="conta"] .box h3{background:#7FDBD4}
+html body section[data-tab="mais"] .box h3{background:#B69CFF}
+html body #wrap .box button:not(.miniAv),html body #top button,html body #searchCard button,html body #profCard button,html body #divulgarCard button,html body #notfoundModal .nfCard button,html body #nodalCard button,html body #zunMSub button,html body #pubTopicsBar button,html body .fbar button,html body #zunMBar button{background:#FFDD00;color:#111;border:2px solid #111;border-radius:6px;box-shadow:2px 2px 0 #111;font-weight:bold;cursor:pointer}
+html body button:active{transform:translate(2px,2px)}
+html body button:focus-visible,html body input:focus-visible,html body select:focus-visible,html body textarea:focus-visible{outline:3px solid #2E6BFF;outline-offset:1px}
+html body #pubTopicsBar button.on,html body #zunMSub button.on{background:#111;color:#fff;border-color:#111}
+html body .post{background:#fff;border:2px solid #111;border-radius:10px;box-shadow:4px 4px 0 #111}
+html body .freply{background:#FFFDF5;border:2px solid #111;border-radius:8px;box-shadow:2px 2px 0 #111}
+html body #zunMPages .post .pfoot button,html body #zunMPages .post .freply button,html body #wrap .post .pfoot button,html body #wrap .post .freply button{background:#fff;border:2px solid #111;border-radius:999px;box-shadow:2px 2px 0 #111;color:#111;font-weight:bold}
+html body input:not([type=color]):not([type=checkbox]):not([type=radio]),html body select,html body textarea{background:#fff;color:#111;border:2px solid #111;border-radius:6px}
+html body .chatlog{background:#fff;border:2px solid #111;border-radius:6px}
+html body .chatlog div{border-bottom:1px dashed #888}
+html body #avatarEl,html body #pubPhotoEl,html body #profAvatar{background:#FFDD00;color:#111;border:2px solid #111}
+html body .miniAv{color:#111}
+html body .mention,html body .mention-me{border:1px solid #111}
+/* ---------- NODAL (modal #tag): mesmo neo dos outros modais ---------- */
+html body #nodalModal{background:rgba(20,40,70,.55)}
+html body #nodalCard{background:#fff;border:3px solid #111;border-radius:12px;box-shadow:8px 8px 0 #111;color:#111}
+html body #nodalLog{background:#fbfdff;border:2px solid #111;border-radius:8px}
+html body #nodalCreate{border:2px dashed #111;border-radius:8px}
+html body .ntag{background:#FFDD00;color:#111;border:2px solid #111;border-radius:20px;box-shadow:2px 2px 0 #111}
+html body .ntagoff{background:#f0f0f0;color:#555;border:2px dashed #888;border-radius:20px}
+html body #zunTokPanel{background:#fff;border:3px solid #111;border-radius:12px;box-shadow:8px 8px 0 #111;color:#111}
+html body #zunTokPanel h3,html body #zunTokPanel .zun-mhead{background:#FFDD00;color:#111;text-transform:uppercase;letter-spacing:.06em;border-bottom:2px solid #111}
+html body #zunTokPanel button{background:#FFDD00;color:#111;border:2px solid #111;border-radius:6px;box-shadow:2px 2px 0 #111;font-weight:bold;cursor:pointer}
+html body #zunTokPanel input:not([type=color]):not([type=checkbox]):not([type=radio]),html body #zunTokPanel textarea{background:#fff;color:#111;border:2px solid #111;border-radius:6px}
+html body #zunTokPanel .meta{color:#33507a}
+html body .pubCard{background:#fff;border:2px solid #111;border-radius:8px;box-shadow:3px 3px 0 #111}
+html body .pubCard.cur{background:#FFDD00}
+html body #searchCard,html body #profCard,html body #divulgarCard,html body #notfoundModal .nfCard{background:#fff;border:3px solid #111;border-radius:12px;box-shadow:8px 8px 0 #111}
+html body.zun-mobile #topMenu{background:#fff;border:2px solid #111;box-shadow:4px 4px 0 #111}
+html body.zun-mobile #topMenu button{background:#fff;color:#111;border:2px solid #111}
+html body.zun-desk #zunMBar{background:#fff;border:2px solid #111;border-bottom-width:3px;border-radius:0 0 12px 12px;box-shadow:4px 4px 0 #111}
+html body.zun-desk #zunMBar button{background:#fff;color:#111;border:2px solid #111;border-radius:8px;box-shadow:2px 2px 0 #111;font-weight:bold}
+html body.zun-desk #zunMBar button.on{background:#111;color:#fff}
+html body.zun-mobile #zunMBar{background:#fff;border-top:3px solid #111}
+html body.zun-mobile #zunMBar button{color:#111}
+html body.zun-mobile #zunMBar button.on{background:#111;color:#fff}
+html body .spin{border-color:#111;border-top-color:#FFDD00}
+/* ---------- NOITE (:not([data-zunfesta]) = na festa, some e a festa vence) ---------- */
+html body.zun-night:not([data-zunfesta]){background:#0E0E14!important;color:#F2F2F7!important}
+html body.zun-night:not([data-zunfesta]) #top{background:#000!important;color:#fff!important;border-bottom:4px solid #FFDD00!important}
+html body.zun-night:not([data-zunfesta]) #top .meta{color:#eaf3fb!important}
+html body.zun-night:not([data-zunfesta]) #top button{background:#FFDD00!important;color:#111!important;border:2px solid #FFDD00!important;font-weight:bold!important}
+html body.zun-night:not([data-zunfesta]) #wrap .box,html body.zun-night:not([data-zunfesta]) #seoBox{background:#16161E!important;color:#F2F2F7!important;border:2px solid #FFDD00!important;box-shadow:4px 4px 0 #FFDD00!important}
+html body.zun-night:not([data-zunfesta]) #wrap .box h3{background:#16161E!important;color:#FFDD00!important;text-transform:uppercase!important;letter-spacing:.06em!important;border-bottom:2px solid #FFDD00!important}
+html body.zun-night:not([data-zunfesta]) #wrap section[data-tab="chats"] .box h3{color:#FF90E8!important;border-bottom-color:#FF90E8!important}
+html body.zun-night:not([data-zunfesta]) #wrap section[data-tab="conta"] .box h3{color:#7FDBD4!important;border-bottom-color:#7FDBD4!important}
+html body.zun-night:not([data-zunfesta]) #wrap section[data-tab="mais"] .box h3{color:#B69CFF!important;border-bottom-color:#B69CFF!important}
+html body.zun-night:not([data-zunfesta]) #wrap .box button:not(.miniAv),html body.zun-night:not([data-zunfesta]) #top button,html body.zun-night:not([data-zunfesta]) #nodalCard button,html body.zun-night:not([data-zunfesta]) #zunMSub button,html body.zun-night:not([data-zunfesta]) #pubTopicsBar button,html body.zun-night:not([data-zunfesta]) .fbar button,html body.zun-night:not([data-zunfesta]) #zunMBar button{background:#FFDD00!important;color:#111!important;border:2px solid #FFDD00!important;border-radius:6px!important;box-shadow:2px 2px 0 #FF90E8!important;font-weight:bold!important}
+html body.zun-night:not([data-zunfesta]) #pubTopicsBar button.on,html body.zun-night:not([data-zunfesta]) #zunMSub button.on{background:#FF90E8!important;color:#111!important;border-color:#FF90E8!important}
+html body.zun-night:not([data-zunfesta]) #wrap .post{background:#16161E!important;border:2px solid #FFDD00!important;box-shadow:3px 3px 0 #FFDD00!important}
+html body.zun-night:not([data-zunfesta]) #wrap .freply{background:#101018!important;border:2px solid #FF90E8!important;box-shadow:2px 2px 0 #FF90E8!important}
+html body.zun-night:not([data-zunfesta]) #wrap .post .pfoot button,html body.zun-night:not([data-zunfesta]) #wrap .post .freply button{background:#0E0E14!important;color:#FFDD00!important;border:2px solid #FFDD00!important;border-radius:999px!important;box-shadow:2px 2px 0 #FFDD00!important}
+html body.zun-night:not([data-zunfesta]) #wrap input:not([type=color]):not([type=checkbox]):not([type=radio]),html body.zun-night:not([data-zunfesta]) #wrap select,html body.zun-night:not([data-zunfesta]) #wrap textarea{background:#0E0E14!important;color:#F2F2F7!important;border:2px solid #FFDD00!important}
+html body.zun-night:not([data-zunfesta]) #wrap .chatlog{background:#0E0E14!important;border:2px solid #FFDD00!important}
+html body.zun-night:not([data-zunfesta]) #wrap .chatlog div:not(.avfx){border-color:#555!important}
+html body.zun-night:not([data-zunfesta]) #avatarEl,html body.zun-night:not([data-zunfesta]) #pubPhotoEl,html body.zun-night:not([data-zunfesta]) #profAvatar{background:#FFDD00!important;color:#111!important;border:2px solid #FFDD00!important}
+html body.zun-night:not([data-zunfesta]) .miniAv{color:#111!important}
+html body.zun-night:not([data-zunfesta]) #wrap #pubNameEl{color:#FFDD00!important}
+html body.zun-night:not([data-zunfesta]) #wrap .pubCard{background:#16161E!important;color:#F2F2F7!important;border:2px solid #FFDD00!important;box-shadow:3px 3px 0 #FFDD00!important}
+html body.zun-night:not([data-zunfesta]) #wrap .pubCard.cur{background:#3a3000!important}
+html body.zun-night:not([data-zunfesta]) #wrap .pubCard .t{color:#FFDD00!important}
+html body.zun-night:not([data-zunfesta]) #wrap .reactPick{background:#0E0E14!important;border:2px solid #FFDD00!important}
+html body.zun-night:not([data-zunfesta]) #searchCard,html body.zun-night:not([data-zunfesta]) #profCard,html body.zun-night:not([data-zunfesta]) #divulgarCard,html body.zun-night:not([data-zunfesta]) #notfoundModal .nfCard{background:#16161E!important;color:#F2F2F7!important;border:3px solid #FFDD00!important;box-shadow:8px 8px 0 #FFDD00!important}
+html body.zun-night:not([data-zunfesta]) #searchCard .meta,html body.zun-night:not([data-zunfesta]) #profCard .meta,html body.zun-night:not([data-zunfesta]) #divulgarCard .meta{color:#B9B9C9!important}
+html body.zun-night:not([data-zunfesta]) #searchCard input:not([type=color]),html body.zun-night:not([data-zunfesta]) #searchCard select,html body.zun-night:not([data-zunfesta]) #searchCard textarea,html body.zun-night:not([data-zunfesta]) #profCard input:not([type=color]),html body.zun-night:not([data-zunfesta]) #profCard select,html body.zun-night:not([data-zunfesta]) #profCard textarea,html body.zun-night:not([data-zunfesta]) #divulgarCard input:not([type=color]),html body.zun-night:not([data-zunfesta]) #divulgarCard select,html body.zun-night:not([data-zunfesta]) #divulgarCard textarea{background:#0E0E14!important;color:#F2F2F7!important;border:2px solid #FFDD00!important}
+html body.zun-night:not([data-zunfesta]) #searchCard button,html body.zun-night:not([data-zunfesta]) #profCard button,html body.zun-night:not([data-zunfesta]) #divulgarCard button,html body.zun-night:not([data-zunfesta]) #notfoundModal .nfCard button{background:#FFDD00!important;color:#111!important;border:2px solid #FFDD00!important;font-weight:bold!important}
+html body.zun-mobile.zun-night:not([data-zunfesta]) #topMenu{background:#16161E!important;border:2px solid #FFDD00!important;box-shadow:4px 4px 0 #FFDD00!important}
+html body.zun-mobile.zun-night:not([data-zunfesta]) #topMenu button{background:#16161E!important;color:#F2F2F7!important;border:2px solid #FFDD00!important}
+html body.zun-night:not([data-zunfesta]) #zunMBar{background:#0E0E14!important;border-color:#FFDD00!important;box-shadow:4px 4px 0 #FFDD00!important}
+html body.zun-night:not([data-zunfesta]) #zunMBar button{color:#F2F2F7!important}
+html body.zun-night:not([data-zunfesta]) #zunMBar button.on{background:#FFDD00!important;color:#111!important}
+html body.zun-night:not([data-zunfesta]) .spin{border-color:#FFDD00!important;border-top-color:#FF90E8!important}
+/* ---------- NODAL noite ---------- */
+html body.zun-night:not([data-zunfesta]) #nodalCard{background:#16161E!important;color:#F2F2F7!important;border:3px solid #FFDD00!important;box-shadow:8px 8px 0 #FFDD00!important}
+html body.zun-night:not([data-zunfesta]) #nodalLog{background:#0E0E14!important;border-color:#FFDD00!important}
+html body.zun-night:not([data-zunfesta]) #nodalLog .nmsg{color:#F2F2F7!important}
+html body.zun-night:not([data-zunfesta]) #nodalCreate{border-color:#FFDD00!important}
+html body.zun-night:not([data-zunfesta]) #nodalCard .meta{color:#B9B9C9!important}
+html body.zun-night:not([data-zunfesta]) #nodalCard input:not([type=color]),html body.zun-night:not([data-zunfesta]) #nodalCard select,html body.zun-night:not([data-zunfesta]) #nodalCard textarea{background:#0E0E14!important;color:#F2F2F7!important;border:2px solid #FFDD00!important}
+html body.zun-night:not([data-zunfesta]) .ntag{background:#FFDD00!important;color:#111!important;border-color:#FFDD00!important;box-shadow:2px 2px 0 #FF90E8!important}
+html body.zun-night:not([data-zunfesta]) .ntagoff{background:#0E0E14!important;color:#B9B9C9!important;border-color:#555!important}
+html body.zun-night:not([data-zunfesta]) #zunTokPanel{background:#16161E!important;color:#F2F2F7!important;border:3px solid #FFDD00!important;box-shadow:8px 8px 0 #FFDD00!important}
+html body.zun-night:not([data-zunfesta]) #zunTokPanel h3,html body.zun-night:not([data-zunfesta]) #zunTokPanel .zun-mhead{background:#16161E!important;color:#FFDD00!important;border-bottom:2px solid #FFDD00!important}
+html body.zun-night:not([data-zunfesta]) #zunTokPanel button{background:#FFDD00!important;color:#111!important;border:2px solid #FFDD00!important;font-weight:bold!important}
+html body.zun-night:not([data-zunfesta]) #zunTokPanel input:not([type=color]),html body.zun-night:not([data-zunfesta]) #zunTokPanel textarea{background:#0E0E14!important;color:#F2F2F7!important;border:2px solid #FFDD00!important}
+html body.zun-night:not([data-zunfesta]) #zunTokPanel .meta{color:#B9B9C9!important}
+/* caixa de entrada do dono (r57b): cores próprias por tema — o .post sozinho
+   herda a cor do texto do body e some no fundo claro (festa) ou escuro. */
+.sugItem{background:#fff;border:1px solid #d7e2ee;border-radius:12px;padding:10px 12px;margin:10px 0;color:#111;word-break:break-word}
+.sugItem b{color:inherit}
+html body.zun-night:not([data-zunfesta]) .sugItem{background:#23233a!important;border-color:#3a3a5c!important;color:#e9e9f5!important;box-shadow:none}
+html body[data-zunfesta] .sugItem{background:var(--zf-card,#1a0f24)!important;color:var(--zf-ink,#e8d5ff)!important;border-color:var(--zf-line,#ff6d00)!important}
+</style>
+<style id="zunWinCss">/* JANELAS (chrome estilo lazer-bunny: barra de título com −/□/× SÓ DE
+  EFEITO, via src/zunwin.js). Paletas da bunny: DIA = light, NOITE = dark.
+  Contrato (ver src/LAYOUT.md): DIA sem !important (perde p/ festa/healer/
+  tema); NOITE com !important + :not([data-zunfesta]) (some na festa);
+  FESTA veste var(--zf-*) com fallback bunny (recolore sozinha, sem quebrar).
+  Estático, sem JS, sem classe injetada depois. */
+html body{--zb-dk:#F896C8;--zb-mid:#FFDAED;--zb-lt:#FFF7FB;--zb-ink:#E664AE;--zb-out:#FFFFFF;--zb-ac:#C4FAFE}
+html body.zun-night{--zb-dk:#6A3E9A;--zb-mid:#4A227B;--zb-lt:#17143B;--zb-ink:#E7C8E7;--zb-out:#9663C9;--zb-ac:#C266A7}
+.zunwin-bar{display:flex;align-items:center;gap:6px;padding:3px 6px;margin-bottom:10px;border-radius:8px;border-top:2px solid var(--zb-out);border-left:2px solid var(--zb-out);border-right:2px solid var(--zb-dk);border-bottom:3px solid var(--zb-dk);background:linear-gradient(180deg,var(--zb-lt) 0%,var(--zb-mid) 100%);box-shadow:0 2px 0 rgba(0,0,0,.18);user-select:none}
+.zunwin-title{font-weight:700;font-size:14px;letter-spacing:.04em;color:#7A1F4D;text-shadow:-1px -1px 0 var(--zb-out),1px -1px 0 var(--zb-out),-1px 1px 0 var(--zb-out),1px 1px 0 var(--zb-out);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.zunwin-sp{flex:1}
+.zunwin-btns{display:flex;gap:3px;flex:none}
+.zunwin-btn{width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font:700 12px/1 Arial,sans-serif;border-top:2px solid var(--zb-out);border-left:2px solid var(--zb-out);border-bottom:2px solid var(--zb-dk);border-right:2px solid var(--zb-dk);border-radius:3px;background:var(--zb-lt);color:var(--zb-ink);cursor:pointer}
+.zunwin-btn:hover{background:var(--zb-dk);color:#fff}
+.zunwin-min>:not(.zunwin-bar){display:none!important}
+@keyframes zunwinPop{0%{transform:scale(1)}40%{transform:scale(1.04)}100%{transform:scale(1)}}
+@keyframes zunwinShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}50%{transform:translateX(4px)}75%{transform:translateX(-2px)}}
+.zunwin-pop{animation:zunwinPop .45s ease}
+.zunwin-shake{animation:zunwinShake .4s ease}
+@media(prefers-reduced-motion:reduce){.zunwin-pop,.zunwin-shake{animation:none}}
+/* NOITE (bunny dark entra sozinha pelas vars; extras de sombra/hover) */
+html body.zun-night:not([data-zunfesta]) .zunwin-bar{box-shadow:0 2px 0 #000!important}
+html body.zun-night:not([data-zunfesta]) .zunwin-title{color:#E7C8E7!important}
+html body.zun-night:not([data-zunfesta]) .zunwin-btn:hover{background:var(--zb-ink)!important;color:var(--zb-dk)!important}
+/* símbolos −/□/× brancos no noturno (contraste no roxo escuro) */
+html body.zun-night:not([data-zunfesta]) .zunwin-btn{color:#fff!important}
+/* FESTA: veste --zf-* (fundo/tinta/linha), fallback = bunny noite */
+html body[data-zunfesta] .zunwin-bar{background:linear-gradient(180deg,var(--zf-ac,#C266A7) 0%,var(--zf-card,#4A227B) 100%);border-top-color:var(--zf-card,#4A227B);border-left-color:var(--zf-card,#4A227B);border-right-color:var(--zf-line,#6A3E9A);border-bottom-color:var(--zf-line,#6A3E9A)}
+html body[data-zunfesta] .zunwin-title{color:var(--zf-on,#E7C8E7);text-shadow:-1px -1px 0 var(--zf-card,#4A227B),1px -1px 0 var(--zf-card,#4A227B),-1px 1px 0 var(--zf-card,#4A227B),1px 1px 0 var(--zf-card,#4A227B)}
+html body[data-zunfesta] .zunwin-btn{background:var(--zf-card,#4A227B);color:var(--zf-ink,#E7C8E7);border-top-color:var(--zf-card,#4A227B);border-left-color:var(--zf-card,#4A227B);border-bottom-color:var(--zf-line,#6A3E9A);border-right-color:var(--zf-line,#6A3E9A)}
+html body[data-zunfesta] .zunwin-btn:hover{background:var(--zf-ac,#C266A7);color:var(--zf-on,#E7C8E7)}
+/* símbolos −/□/× brancos também na festa */
+html body[data-zunfesta][data-zunfesta] .zunwin-btn{color:#fff!important}
+html body[data-zunfesta][data-zunfesta] .zunwin-btn:hover{color:#fff!important}
+/* FESTA no h3-bar: o título HERDA a cor do h3 da festa (cada festa pinta
+   `#wrap .box h3` com !important — brigar com var(--zf-on) estourava).
+   Só o texto; os botões .zunwin-btn ficam como estão. */
+html body[data-zunfesta] .box>h3.zunwin-bar>.zunwin-title,html body[data-zunfesta] #zunMPages .box>h3.zunwin-bar>.zunwin-title{color:inherit;text-shadow:none}
+/* ---------- SITE TODO (paleta bunny nos fundos: rosa dia / roxa noite) ----------
+   Mesma lógica de cascata do neo: DIA sem !important (festa/healer/tema
+   ganham); NOITE com !important + :not([data-zunfesta]) (some na festa).
+   Texto sempre alto-contraste (#111 dia / #E7C8E7 noite) p/ o healer quieto;
+   o rosa/roxo vai nos FUNDOS, bordas e sombras. Vem DEPOIS do #zunNeoCss,
+   então vence o neo em especificidade igual. */
+html body{background:#FFDAED;background-image:repeating-linear-gradient(45deg,rgba(248,150,200,.12) 0 12px,rgba(255,255,255,0) 12px 24px);color:#111}
+html body #top{background:linear-gradient(180deg,#FFDAED 0%,#F896C8 100%);color:#111;border-bottom:4px solid #E664AE}
+html body #top .meta{color:#5c2440}
+html body #top button{background:#fff;color:#111;border:2px solid #E664AE;border-radius:6px;font-weight:bold}
+html body .box{background:#FFF7FB;border:3px ridge #F896C8;border-radius:10px;box-shadow:4px 4px 0 #E664AE}
+html body .box h3{background:#F896C8;color:#111;text-transform:uppercase;letter-spacing:.06em;border-bottom:2px solid #E664AE}
+html body section[data-tab="chats"] .box h3{background:#FF90E8}
+html body section[data-tab="conta"] .box h3{background:#C4FAFE}
+html body section[data-tab="mais"] .box h3{background:#9663C9}
+html body #wrap .box button:not(.miniAv),html body #top button,html body #searchCard button,html body #profCard button,html body #divulgarCard button,html body #notfoundModal .nfCard button,html body #nodalCard button,html body #zunMSub button,html body #pubTopicsBar button,html body .fbar button,html body #zunMBar button{background:#FFDAED;color:#111;border:2px solid #E664AE;border-radius:6px;box-shadow:2px 2px 0 #E664AE;font-weight:bold;cursor:pointer}
+html body .post{background:#FFDAED;border:2px solid #F896C8;border-radius:10px;box-shadow:4px 4px 0 #F8B4D9}
+html body .freply{background:#FFF0F7;border:2px solid #F896C8;border-radius:8px;box-shadow:2px 2px 0 #F8B4D9}
+html body #zunMPages .post .pfoot button,html body #zunMPages .post .freply button,html body #wrap .post .pfoot button,html body #wrap .post .freply button{background:#FFF7FB;color:#111;border:2px solid #E664AE;border-radius:999px;box-shadow:2px 2px 0 #E664AE;font-weight:bold}
+html body input:not([type=color]):not([type=checkbox]):not([type=radio]),html body select,html body textarea{background:#fff;color:#111;border:2px solid #F896C8;border-radius:6px}
+html body .chatlog{background:#FFDAED;border:2px solid #F896C8;border-radius:6px}
+html body #avatarEl,html body #pubPhotoEl,html body #profAvatar{background:#F896C8;color:#111;border:2px solid #E664AE}
+html body .pubCard{background:#FFF7FB;border:2px solid #F896C8;border-radius:8px;box-shadow:3px 3px 0 #F8B4D9}
+html body .pubCard.cur{background:#FFDAED;border-color:#E664AE}
+html body #searchCard,html body #profCard,html body #divulgarCard,html body #notfoundModal .nfCard{background:#FFF7FB;border:3px solid #F896C8;border-radius:12px;box-shadow:8px 8px 0 #E664AE}
+html body #nodalCard{background:#FFF7FB;border:3px solid #F896C8;border-radius:12px;box-shadow:8px 8px 0 #E664AE}
+html body #nodalLog{background:#FFDAED;border:2px solid #F896C8;border-radius:8px}
+html body .ntag{background:#F896C8;color:#111;border:2px solid #E664AE;border-radius:20px;box-shadow:2px 2px 0 #E664AE}
+html body #zunTokPanel{background:#FFF7FB;border:3px solid #F896C8;border-radius:12px;box-shadow:8px 8px 0 #E664AE}
+html body #zunTokPanel h3,html body #zunTokPanel .zun-mhead{background:#F896C8;color:#111;text-transform:uppercase;letter-spacing:.06em;border-bottom:2px solid #E664AE}
+html body ::selection{background:#F896C8;color:#111}
+html body .spin{border-color:#E664AE;border-top-color:#F896C8}
+/* NOITE bunny (roxa): mesma cobertura, !important, some na festa */
+html body.zun-night:not([data-zunfesta]){background:#4A227B!important;background-image:repeating-linear-gradient(45deg,rgba(0,0,0,.14) 0 12px,rgba(255,255,255,0) 12px 24px)!important;color:#E7C8E7!important}
+html body.zun-night:not([data-zunfesta]) #top{background:linear-gradient(180deg,#4A227B 0%,#17143B 100%)!important;color:#E7C8E7!important;border-bottom:4px solid #C266A7!important}
+html body.zun-night:not([data-zunfesta]) #top .meta{color:#C9A9D6!important}
+html body.zun-night:not([data-zunfesta]) #top button{background:#6A3E9A!important;color:#E7C8E7!important;border:2px solid #9663C9!important}
+html body.zun-night:not([data-zunfesta]) #wrap .box,html body.zun-night:not([data-zunfesta]) #seoBox{background:#17143B!important;color:#E7C8E7!important;border:3px ridge #6A3E9A!important;box-shadow:4px 4px 0 #6A3E9A!important}
+html body.zun-night:not([data-zunfesta]) #wrap .box h3{background:#6A3E9A!important;color:#E7C8E7!important;border-bottom:2px solid #9663C9!important}
+html body.zun-night:not([data-zunfesta]) #wrap section[data-tab="chats"] .box h3{background:#6A3E9A!important;color:#FF90E8!important}
+html body.zun-night:not([data-zunfesta]) #wrap .box button:not(.miniAv),html body.zun-night:not([data-zunfesta]) #top button,html body.zun-night:not([data-zunfesta]) #nodalCard button,html body.zun-night:not([data-zunfesta]) #zunMSub button,html body.zun-night:not([data-zunfesta]) #pubTopicsBar button,html body.zun-night:not([data-zunfesta]) .fbar button,html body.zun-night:not([data-zunfesta]) #zunMBar button{background:#4A227B!important;color:#E7C8E7!important;border:2px solid #9663C9!important;border-radius:6px!important;box-shadow:2px 2px 0 #6A3E9A!important;font-weight:bold!important}
+html body.zun-night:not([data-zunfesta]) #wrap .post,html body.zun-night:not([data-zunfesta]) #zunMPages .post{background:#4A227B!important;color:#E7C8E7!important;border:2px solid #6A3E9A!important;box-shadow:3px 3px 0 #6A3E9A!important}
+html body.zun-night:not([data-zunfesta]) #wrap .freply{background:#241a4d!important;color:#E7C8E7!important;border:2px solid #6A3E9A!important}
+html body.zun-night:not([data-zunfesta]) #wrap .post .pfoot button,html body.zun-night:not([data-zunfesta]) #wrap .post .freply button,html body.zun-night:not([data-zunfesta]) #zunMPages .post .pfoot button,html body.zun-night:not([data-zunfesta]) #zunMPages .post .freply button{background:#17143B!important;color:#E7C8E7!important;border:2px solid #9663C9!important}
+html body.zun-night:not([data-zunfesta]) #wrap input:not([type=color]):not([type=checkbox]):not([type=radio]),html body.zun-night:not([data-zunfesta]) #wrap select,html body.zun-night:not([data-zunfesta]) #wrap textarea{background:#241a4d!important;color:#E7C8E7!important;border:2px solid #9663C9!important}
+html body.zun-night:not([data-zunfesta]) #wrap .chatlog{background:#4A227B!important;border:2px solid #6A3E9A!important}
+html body.zun-night:not([data-zunfesta]) #searchCard,html body.zun-night:not([data-zunfesta]) #profCard,html body.zun-night:not([data-zunfesta]) #divulgarCard,html body.zun-night:not([data-zunfesta]) #notfoundModal .nfCard,html body.zun-night:not([data-zunfesta]) #nodalCard,html body.zun-night:not([data-zunfesta]) #zunTokPanel{background:#17143B!important;color:#E7C8E7!important;border:3px solid #6A3E9A!important;box-shadow:8px 8px 0 #6A3E9A!important}
+html body.zun-night:not([data-zunfesta]) #nodalLog{background:#4A227B!important;border-color:#6A3E9A!important;color:#E7C8E7!important}
+/* H3 de caixa vira barra (JS embrulha o texto em .zunwin-title e pendura os
+   botões; o texto continua vivo p/ o i18n). Especificidade acima do neo. */
+html body .box>h3.zunwin-bar,html body #zunMPages .box>h3.zunwin-bar{display:flex;align-items:center;gap:6px;padding:3px 6px;margin-bottom:10px;border-radius:8px;border-top:2px solid var(--zb-out);border-left:2px solid var(--zb-out);border-right:2px solid var(--zb-dk);border-bottom:3px solid var(--zb-dk);background:linear-gradient(180deg,var(--zb-lt) 0%,var(--zb-mid) 100%);box-shadow:0 2px 0 rgba(0,0,0,.18);user-select:none;text-transform:uppercase;letter-spacing:.06em}
+html body .box>h3.zunwin-bar>.zunwin-btns{margin-left:auto}
+html body.zun-night:not([data-zunfesta]) .box>h3.zunwin-bar,html body.zun-night:not([data-zunfesta]) #zunMPages .box>h3.zunwin-bar{background:linear-gradient(180deg,var(--zb-lt) 0%,var(--zb-mid) 100%)!important;border-top-color:var(--zb-out)!important;border-left-color:var(--zb-out)!important;border-right-color:var(--zb-dk)!important;border-bottom-color:var(--zb-dk)!important;box-shadow:0 2px 0 #000!important}
+html body[data-zunfesta] .box>h3.zunwin-bar,html body[data-zunfesta] #zunMPages .box>h3.zunwin-bar{background:linear-gradient(180deg,var(--zf-ac,#C266A7) 0%,var(--zf-card,#4A227B) 100%);border-top-color:var(--zf-card,#4A227B);border-left-color:var(--zf-card,#4A227B);border-right-color:var(--zf-line,#6A3E9A);border-bottom-color:var(--zf-line,#6A3E9A)}
+</style>
+  <style id="zunTidyCss">
+/* Tidy 2026-10-30 (ver src/LAYOUT.md): hierarquia do Feed + compactos.
+   Camada dia sem !important (perde p/ noite/festa/healer/tema de propósito). */
+#comoMiniBox .zun-mini-actions{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+#comoMiniBox ol{margin:6px 0 6px 18px;padding:0;font-size:13px;line-height:1.6}
+#comoMiniBox .zun-step{margin:6px 0;padding:7px 8px;border:1px solid #d9e6f2;border-radius:8px;background:#f6faff}
+#comoMiniBox .zun-step b{display:block;font-size:13px}
+#comoMiniBox .zun-step .zun-where{display:block;font-size:12px;opacity:.8;margin:2px 0 6px}
+#comoMiniBox .zun-step button{font-size:12px}
+#chamaBox.zun-compact .zun-chama-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#chamaBox.zun-compact .zun-chama-txt{flex:1 1 auto;min-width:140px;font-size:13px}
+#postBox .zun-post-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+#postBox.zun-collapsed .zunfmtbar,#postBox.zun-collapsed #fileInput,#postBox.zun-collapsed #feedLink{display:none}
+#feedFmtTgl{flex:none}
+#mirAdv{margin-top:6px}
+#mirAdv summary{cursor:pointer;font-size:13px;font-weight:bold;color:#33507a}
+html body .fltTglLbl{font-size:11px;opacity:.85}
+body.zun-mobile #zunMPages{padding-bottom:4px}
+#zzDesafio summary{cursor:pointer;font-size:13px;font-weight:bold}
+/* Gutters removidos (pedido do dono): telas grandes seguem o #wrap central
+   sem flutuantes laterais. Selos Dev/7d (FASE 20): só o servidor autoriza. */
+.zun-seal-dev,.zun-seal-loyal{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:bold;line-height:1;vertical-align:1px;margin-left:5px;padding:2px 6px;border-radius:999px;border:1px solid #111;white-space:nowrap}
+.zun-seal-dev{background:#FFDD00;color:#111}
+.zun-seal-loyal{background:#e8f1fb;color:#33507a;border-color:#b6c9db}
+.zun-seal-dev svg,.zun-seal-loyal svg{flex:none;display:block}
+body.zun-night .zun-seal-dev{background:#FFDD00;color:#111;border-color:#FFDD00}
+body.zun-night .zun-seal-loyal{background:#2a2a45;color:#cfd2ff;border-color:#3a3a5c}
+</style>
+<div id="zunBoot" role="status" aria-live="polite" aria-label="carregando zunzum"><div class="zunboot-wash" aria-hidden="true"></div><div class="zunboot-card"><svg class="zunboot-bee" viewBox="0 0 256 256" width="96" height="96" aria-hidden="true"><defs><radialGradient id="zbRosa" cx="42%" cy="34%" r="75%"><stop offset="0%" stop-color="#FFE0EF"/><stop offset="55%" stop-color="#FFBDDD"/><stop offset="100%" stop-color="#FF9ECC"/></radialGradient><clipPath id="zbCab"><circle cx="128" cy="150" r="90"/></clipPath></defs><path d="M102 66 Q88 44 70 38" fill="none" stroke="#3B2350" stroke-width="10" stroke-linecap="round"/><path d="M154 66 Q168 44 186 38" fill="none" stroke="#3B2350" stroke-width="10" stroke-linecap="round"/><circle cx="68" cy="37" r="10" fill="#3B2350"/><circle cx="188" cy="37" r="10" fill="#3B2350"/><path d="M128 62 L128 40" fill="none" stroke="#3B2350" stroke-width="8" stroke-linecap="round"/><g><ellipse cx="106" cy="28" rx="17" ry="12" fill="#FF4FA3" stroke="#3B2350" stroke-width="6" transform="rotate(-18 106 28)"/><ellipse cx="150" cy="28" rx="17" ry="12" fill="#FF4FA3" stroke="#3B2350" stroke-width="6" transform="rotate(18 150 28)"/><circle cx="128" cy="30" r="10" fill="#FF7AB8" stroke="#3B2350" stroke-width="6"/></g><circle cx="128" cy="150" r="90" fill="url(#zbRosa)" stroke="#3B2350" stroke-width="11"/><g clip-path="url(#zbCab)"><path d="M30 98 Q128 128 226 98 L226 68 Q128 98 30 68 Z" fill="#FFD94D" stroke="#3B2350" stroke-width="7"/></g><g><ellipse cx="96" cy="154" rx="16" ry="21" fill="#2A1740"/><ellipse cx="160" cy="154" rx="16" ry="21" fill="#2A1740"/><circle cx="101" cy="147" r="6" fill="#FFFFFF"/><circle cx="165" cy="147" r="6" fill="#FFFFFF"/><circle cx="91" cy="160" r="2.6" fill="#FFFFFF" opacity="0.9"/><circle cx="155" cy="160" r="2.6" fill="#FFFFFF" opacity="0.9"/></g><ellipse cx="64" cy="164" rx="11" ry="7" fill="#FFFFFF" opacity="0.95" transform="rotate(-24 64 164)"/><ellipse cx="64" cy="182" rx="15" ry="10" fill="#FF6FA5" opacity="0.85"/><ellipse cx="192" cy="182" rx="15" ry="10" fill="#FF6FA5" opacity="0.85"/><path d="M108 188 Q118 177 128 187 Q138 177 148 188" fill="none" stroke="#3B2350" stroke-width="6" stroke-linecap="round"/></svg><div class="zunboot-name">zunzum</div><div class="zunboot-sub">a rede da abelhinha 🐝</div><div class="zunboot-bar" aria-hidden="true"><i id="zunBootFill"></i></div><div class="zunboot-row"><span id="zunBootMsg">acordando a abelhinha…</span><span id="zunBootPct">5%</span></div></div></div>
+<style>
+/* BOOT (tela de carregamento): some sozinha quando o 1º feed assenta (app.js)
+   ou em 20s (failsafe). Logo é SVG inline = pinta sem rede. Dia neo+bunny,
+   noite roxa, festa via var(--zf-*). Sem fake: a barra só anda em marco real. */
+#zunBoot{position:fixed;inset:0;z-index:99980;display:flex;align-items:center;justify-content:center;background:#FFDAED;background-image:repeating-linear-gradient(45deg,rgba(248,150,200,.12) 0 12px,rgba(255,255,255,0) 12px 24px);transition:opacity .35s ease}
+#zunBoot[hidden]{display:none!important}
+#zunBoot.zunboot-bye{opacity:0;pointer-events:none}
+/* véu que fica MUDANDO DE COR até assentar no tema final (dia/noite/festa):
+   camada atrás do cartão; no "ready" o stub põe .zunboot-settled e o véu
+   some revelando o tema certo. Sem rede, sem briga de especificidade. */
+.zunboot-wash{position:absolute;inset:0;pointer-events:none;animation:zunbootWash 7s ease-in-out infinite}
+@keyframes zunbootWash{0%{background-color:#F0A8B8}25%{background-color:#F2C979}50%{background-color:#9CCB9C}75%{background-color:#9DBBDD}100%{background-color:#F0A8B8}}
+#zunBoot .zunboot-card{position:relative;z-index:1}
+#zunBoot.zunboot-settled .zunboot-wash{opacity:0;transition:opacity .6s ease;animation:none}
+#zunBoot:not(.zunboot-settled) .zunboot-bar i{animation:zunbootHue 6s linear infinite}
+@keyframes zunbootHue{to{filter:hue-rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.zunboot-wash{display:none}#zunBoot .zunboot-bar i{animation:none}}
+body.zun-saver .zunboot-wash{display:none}
+body.zun-saver #zunBoot .zunboot-bar i{animation:none}
+.zunboot-card{background:#fff;border:3px solid #111;border-radius:16px;box-shadow:6px 6px 0 #111;padding:22px 30px 18px;text-align:center;max-width:min(330px,88vw);box-sizing:border-box}
+.zunboot-bee{width:96px;height:96px;animation:zunbootBob 1.2s ease-in-out infinite}
+@keyframes zunbootBob{50%{transform:translateY(-8px)}}
+.zunboot-name{font:bold 30px Verdana,Arial,sans-serif;color:#111;letter-spacing:1px;margin-top:4px}
+.zunboot-sub{font-size:12px;color:#555;margin:2px 0 12px}
+.zunboot-bar{height:14px;border:2px solid #111;border-radius:999px;background:#fff;overflow:hidden}
+.zunboot-bar i{display:block;height:100%;width:5%;background:linear-gradient(180deg,#FF7AB8,#E664AE);border-radius:999px;transition:width .25s ease}
+.zunboot-row{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:#444;margin-top:6px}
+.zunboot-row span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (prefers-reduced-motion:reduce){.zunboot-bee{animation:none}#zunBoot{transition:none}.zunboot-bar i{transition:none}}
+body.zun-saver .zunboot-bee{animation:none}
+html body.zun-night:not([data-zunfesta]) #zunBoot{background:#141422!important;background-image:none!important}
+html body.zun-night:not([data-zunfesta]) .zunboot-card{background:#1e1e30!important;border-color:#000!important;box-shadow:6px 6px 0 #000!important;color:#e8e8f2!important}
+html body.zun-night:not([data-zunfesta]) .zunboot-name{color:#E7C8E7!important}
+html body.zun-night:not([data-zunfesta]) .zunboot-sub,html body.zun-night:not([data-zunfesta]) .zunboot-row{color:#aaa!important}
+html body.zun-night:not([data-zunfesta]) .zunboot-bar{background:#141422!important;border-color:#000!important}
+html body.zun-night:not([data-zunfesta]) .zunboot-bar i{background:#C266A7!important}
+html body[data-zunfesta][data-zunfesta] #zunBoot{background:var(--zf-card,#4A227B)!important;background-image:none!important}
+html body[data-zunfesta][data-zunfesta] .zunboot-card{background:var(--zf-card,#4A227B)!important;border-color:var(--zf-line,#6A3E9A)!important;box-shadow:6px 6px 0 var(--zf-line,#6A3E9A)!important;color:var(--zf-ink,#E7C8E7)!important}
+html body[data-zunfesta][data-zunfesta] .zunboot-name{color:var(--zf-ink,#E7C8E7)!important}
+html body[data-zunfesta][data-zunfesta] .zunboot-sub,html body[data-zunfesta][data-zunfesta] .zunboot-row{color:var(--zf-ink,#E7C8E7)!important;opacity:.85}
+html body[data-zunfesta][data-zunfesta] .zunboot-bar{background:var(--zf-card,#4A227B)!important;border-color:var(--zf-line,#6A3E9A)!important}
+html body[data-zunfesta][data-zunfesta] .zunboot-bar i{background:var(--zf-ac,#C266A7)!important}
+</style>
+<script>
+/* zunboot-stub: API de progresso REAL do carregamento. __zunBoot(f,etapa) é
+   monotônica (nunca volta) e no 100% SEGURA 3s no tema final (fake de
+   propósito, pedido do dono: dá p/ ver que o loading combinou) e some;
+   failsafe 20s p/ nunca prender. Pinta zun-night cedo p/ não piscar o tema.
+   ?boot=slow = segura 5s (teste/print). ?boot=fast ou navegador automatizado
+   (navigator.webdriver, ex. robô de print do Neocities) = sem segura: assenta
+   assim que o feed pinta, p/ o print pegar o site pronto e não o loading. */
+(function(){
+  var t0 = Date.now(), cur = 0, done = false, slow = false, fast = false;
+  try{ slow = /(?:^|[?&])boot=slow(?:[&#]|$)/.test(location.search); }catch(e){}
+  try{ fast = /(?:^|[?&])boot=fast(?:[&#]|$)/.test(location.search) || (navigator.webdriver === true); }catch(e){}
+  function lang(){ try{ var l = String(localStorage.getItem("zunzumLang")||"").toLowerCase().slice(0,2); return (l==="en"||l==="es") ? l : "pt"; }catch(e){ return "pt"; } }
+  var L = {
+    bee:{pt:"acordando a abelhinha…",en:"waking the little bee…",es:"despertando a la abejita…"},
+    mods:{pt:"carregando módulos…",en:"loading modules…",es:"cargando los módulos…"},
+    bank:{pt:"ligando o banco…",en:"connecting…",es:"conectando…"},
+    feed:{pt:"buscando o feed…",en:"fetching the feed…",es:"buscando el feed…"},
+    ready:{pt:"pronto! 🐝",en:"ready! 🐝",es:"¡listo! 🐝"}
+  };
+  try{
+    if(!localStorage.getItem("orkutSiteTheme")){
+      var p = String(localStorage.getItem("zunzumNight")||"auto"), on;
+      if(p==="on") on = true; else if(p==="off") on = false;
+      else{ var h = new Date().getHours(); on = (h>=19||h<6); }
+      if(on && document.body) document.body.classList.add("zun-night");
+    }
+  }catch(e){}
+  window.__zunBoot = function(f, key){
+    try{
+      if(done) return;
+      f = Math.max(0, Math.min(1, Number(f)||0));
+      if(f < cur) f = cur; cur = f;
+      var fill = document.getElementById("zunBootFill"), m = document.getElementById("zunBootMsg"), pc = document.getElementById("zunBootPct");
+      var v = Math.max(5, Math.round(f*100));
+      if(fill) fill.style.width = v+"%";
+      if(pc) pc.textContent = v+"%";
+      if(m && key && L[key]) m.textContent = L[key][lang()];
+    }catch(e){}
+  };
+  window.__zunBootDone = function(){
+    if(done) return;
+    try{ window.__zunBoot(1, "ready"); }catch(e){}
+    done = true;
+    try{ var _zb = document.getElementById("zunBoot"); if(_zb) _zb.classList.add("zunboot-settled"); }catch(e){}
+    var wait = slow ? 5000 : (fast ? 0 : 3000); // segura o 100% + tema final (fake pedido do dono; robô/?boot=fast = 0)
+    setTimeout(function(){
+      try{
+        var b = document.getElementById("zunBoot"); if(!b) return;
+        b.classList.add("zunboot-bye");
+        setTimeout(function(){ try{ b.hidden = true; b.remove(); }catch(e){} }, 400);
+      }catch(e){}
+    }, wait);
+  };
+  window.__zunBoot(0.05, "bee");
+  setTimeout(function(){ try{ if(!done) window.__zunBootDone(); }catch(e){} }, 20000);
+})();
+</script>
+<div id="top"><img id="topLogoImg" src="src/img/abelhinha.png" alt="abelhinha zunzum — logo da rede social anonima estilo orkut nostálgico anos 2000" width="36" height="36" style="border-radius:8px"><div class="top-brand"><h1 style="font-size:20px;margin:0">zunzum<span class="top-sub"> — rede anonima estilo orkut</span></h1><span class="meta top-desc">nostalgia anos 2000 | feed livre sem conta | chat publico e privado</span></div><span id="netEl" hidden></span><span id="userCountEl" class="meta" style="margin-left:auto"></span><span id="viewsEl" class="meta" title="total de visitas"></span><div id="topBtns"><button id="zunPetTopBtn" title="bichinho virtual: ovo que vira rostinho fofo"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px" aria-hidden="true"><path d="M8 1.8C10.8 1.8 13 6.6 13 10.2a5 5 0 0 1-10 0C3 6.6 5.2 1.8 8 1.8z"/><path d="M5.9 8.4a2.6 2.6 0 0 0 1.2 2.2"/></svg><span class="btn-txt"> bichinho</span></button><button id="searchBtn" title="buscar">🔍<span class="btn-txt"> buscar</span></button><button id="divulgarBtn" title="gerar texto para divulgar em foruns">📢<span class="btn-txt"> divulgar</span></button><button id="langBtn" title="view in English">EN</button></div></div>
+<noscript><div><h2>Zunzum 🐝 — a rede social da abelhinha, anônima nostálgica estilo Orkut anos 2000</h2><p>Zunzum é a rede social da abelhinha: uma rede anônima brasileira com nostalgia do Orkut anos 2000: publique no feed sem criar conta, participe de comunidades, troque depoimentos e scraps como no Orkut antigo e converse no bate-papo público ou em salas privadas com uma conta simples de nick e senha. Sem email, grátis, com busca por IA, perfis com @nick e DJ IA. Para quem sente falta do Orkut, do bate-papo UOL, do MSN e dos fóruns retrô. O Orkut 2.0 vem aí: enquanto não sai, o zunzum já existe — anônimo, sem email.</p><ul><li>Feed anônimo livre estilo Orkut, sem conta</li><li>Comunidades, depoimentos e scraps nostálgicos anos 2000</li><li>Bate-papo público e privado por código, com conta nick + senha</li><li>Busca com IA, perfis @nick e fórum retrô</li></ul></div></noscript>
+<noscript><div lang="en"><h2>Zunzum 🐝 — the little-bee network: nostalgic Orkut-style anonymous social network, 2000s vibe</h2><p>Zunzum is the little-bee social network: an anonymous social network with Orkut 2000s nostalgia: post to the retro feed with no account, join communities, exchange testimonials and scraps like on old Orkut and chat in the public room or private rooms with a simple nick account. No email, free, with AI search, @nick profiles and AI DJ. For those who miss Orkut, MSN and old-school forums.</p><ul><li>Free nostalgic Orkut-style anonymous feed, no account</li><li>Communities, testimonials and scraps, 2000s vibe</li><li>Public and private chat by code, with nick account</li><li>AI search, profiles, testimonials and suggestions</li></ul><p>English version: <a href="https://perchance.org/zunzum?lang=en">perchance.org/zunzum?lang=en</a></p></div></noscript>
+<noscript><div lang="es"><h2>Zunzum 🐝 — la red social de la abejita, anónima nostálgica estilo Orkut, años 2000</h2><p>Zunzum es la red social de la abejita: una red anónima con nostalgia del Orkut años 2000: publica en el feed sin crear cuenta, participa en comunidades, intercambia testimonios y scraps como en el Orkut clásico y conversa en el chat público o en salas privadas con una cuenta simple de nick. Sin email, gratis, con búsqueda por IA, perfiles @nick y DJ IA.</p><ul><li>Feed anónimo libre estilo Orkut, sin cuenta</li><li>Comunidades, testimonios y scraps, años 2000</li><li>Chat público y privado por código, con cuenta de nick</li></ul><p>Versión en español: <a href="https://perchance.org/zunzum?lang=es">perchance.org/zunzum?lang=es</a> · Sala pública: <a href="https://perchance.org/zunzum?sala=geral">perchance.org/zunzum?sala=geral</a></p></div></noscript>
+<div id="wrap">
+<div>
+<div class="box"><h3>usuario</h3><div style="display:flex;gap:8px"><div id="avatarEl">?</div><div id="infoList"></div></div><div id="meStatusRow" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px"><span class="meta">você está:</span><div id="meStBox" style="position:relative"><button type="button" id="meStCur" aria-haspopup="listbox" aria-expanded="false"></button><div id="meStList" role="listbox" hidden></div></div><button type="button" id="meFindBtn" title="buscar gente por nick">🔍 buscar gente</button></div><div id="meEl" style="margin:6px 0;font-size:13px"></div><div id="authBox"></div></div>
+<div class="box" id="sobreBox"><h3>sobre</h3><div class="meta">Clima de Orkut anos 2000: comunidades, depoimentos e scraps.<br>Publique no feed sem conta — desabafa sem mostrar o rosto.<br>Crie um nick com senha para conversar no bate-papo publico e em salas privadas — e ache sua turma.</div></div>
+<div class="box" id="comoBox"><h3>como funciona</h3><div style="font-size:13px;line-height:1.7">1. Leia o feed sem conta e poste anonimamente.<br>2. Crie seu nick pra conversar no chat e nas salas.<br>3. Traga a turma pelo botão 📢 divulgar no topo.<br>4. Sala privada: combinem um código e digitem igual.<!-- T15-ONDA-TEMP (remover quando a onda "Orkut 2.0" passar) --><br>5. 📻 O Orkut 2.0 vem aí — enquanto não sai, o zunzum já existe: anônimo, sem email.</div></div>
+<div class="box"><h3>espelho nostr 🤖</h3><div class="meta">Replica posts do feed pra rede Nostr com link de volta. Roda neste navegador enquanto ligado.</div><div id="mirStatus" class="meta">desligado</div><details id="mirAdv"><summary>avançado</summary><input id="mirKey" type="password" placeholder="chave privada hex (64 letras)" autocomplete="off"><div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap"><button id="mirBtn">ligar</button><button id="mirAIBtn" title="IA interage: curte, responde e segue de volta">IA ✅</button><button id="mirNewBtn" title="cria chave nova">nova chave</button><button id="mirShowBtn" title="mostrar/esconder chave">👁</button><button id="mirCopyBtn" title="copiar chave">copiar</button></div><span id="mirMsg" class="meta"></span></details></div>
+<div class="box"><h3>sugestões e bugs</h3><select id="sugKind"><option value="ideia">ideia de melhoria</option><option value="bug">bug</option><option value="denuncia">denúncia 🚨</option></select><textarea id="sugText" placeholder="conte sua ideia, bug ou denúncia..."></textarea><button id="sugBtn">enviar</button> <span id="sugMsg" class="meta"></span><div id="ownerBox"></div><div id="sugPanel" hidden><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px"><b>caixa de entrada (só dono)</b><span id="sugCount" class="meta"></span><select id="sugFilter" style="width:auto"><option value="">todas</option><option value="ideia">ideias</option><option value="bug">bugs</option><option value="denuncia">denúncias</option></select><button id="sugRefresh" type="button">↻ atualizar</button><button id="sugClear" type="button">limpar tudo</button></div><div id="sugList"></div><span id="sugPanelMsg" class="meta"></span></div></div>
+<div class="box" id="atalhosBox"><h3>atalhos</h3><div class="flex flex-col gap-2"><div class="flex gap-2"><button id="atalhosGoPost" class="flex-1">➕ postar</button><button id="atalhosGoChats" class="flex-1">💬 chats</button></div><div class="flex gap-2"><button id="atalhosGoSearch" class="flex-1">🔍 buscar</button><button id="atalhosGoDiv" class="flex-1">📢 divulgar</button></div></div></div>
+<div class="box" id="amigosBox"><h3>🔗 sites amigos</h3><div class="meta">webring da abelhinha: blogroll anos 2000, sem algoritmo. Entrar e sair por link, como antigamente.</div><div id="amigosList" class="meta" style="line-height:2"><a href="https://perchance.org/zunzum" rel="noopener noreferrer nofollow">zunzum — rede da abelhinha</a> · <a href="https://perchance.org/hubx" rel="noopener noreferrer nofollow">hubx — geradores atualizados</a> · <a href="https://perchance.org/examples" rel="noopener noreferrer nofollow">examples — exemplos Perchance</a></div><div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;align-items:center"><button id="amigosPrev" type="button" title="site anterior do anel">← anterior</button><button id="amigosRand" type="button" title="site aleatório do anel">🎲 aleatório</button><button id="amigosNext" type="button" title="próximo site do anel">próximo →</button></div><div id="amigosCur" class="meta" style="margin-top:4px"></div><div class="zun-ring"><a href="https://webring.theoldnet.com/member/59cdff7034fb6d4e55506e1130f41da0/previous/navigate" target="_blank" rel="noopener nofollow" title="previous site">←</a> <a href="https://webring.theoldnet.com/" target="_blank" rel="noopener nofollow" title="theoldnet webring">oldnet</a> <a href="https://webring.theoldnet.com/member/59cdff7034fb6d4e55506e1130f41da0/random/navigate" target="_blank" rel="noopener nofollow" title="random site">🎲</a> <a href="https://webring.theoldnet.com/member/59cdff7034fb6d4e55506e1130f41da0/next/navigate" target="_blank" rel="noopener nofollow" title="next site">→</a></div><div class="zun-ring"><a href="https://geekring.net/" target="_blank" rel="noopener nofollow" title="geekring webring">geekring</a> · <a href="https://geekring.net/form.html" target="_blank" rel="noopener nofollow" title="join the ring">join</a></div><div class="meta" style="margin-top:4px">geekring: pedido de entrada enviado (as setas ativam quando aprovarem)<!-- APROVOU? troque a linha geekring acima por: <div class="zun-ring"><a href="https://geekring.net/site/NUMBER/previous" target="_blank" rel="noopener nofollow" title="previous site">←</a> <a href="https://geekring.net/" target="_blank" rel="noopener nofollow" title="geekring webring">geekring</a> <a href="https://geekring.net/site/NUMBER/next" target="_blank" rel="noopener nofollow" title="next site">→</a></div> --></div><div class="zun-ring"><a href="https://webring.dinhe.net/prev/https://zunzum.neocities.org/" target="_blank" rel="noopener nofollow" title="previous site">←</a> <a href="https://webring.dinhe.net/" target="_blank" rel="noopener nofollow" title="retronaut webring">retronaut</a> <a href="https://webring.dinhe.net/next/https://zunzum.neocities.org/" target="_blank" rel="noopener nofollow" title="next site">→</a></div><div class="zun-ring"><a href="https://webri.ng/webring/brsnoneocities/" target="_blank" rel="noopener nofollow" title="brasileiros no neocities webring">brasileiros</a> · <a href="mailto:mwahh666rs@gmail.com?subject=O%20webring%20de%20Brs%20no%20Neocities!" title="join the ring">join</a></div><div class="meta" style="margin-top:4px">brasileiros no neocities: pedido por email ainda não enviado (as setas ativam quando aprovarem)<!-- APROVOU? troque a linha brasileiros acima por: <div class="zun-ring"><a href="https://webri.ng/webring/brsnoneocities/previous?index=N" target="_blank" rel="noopener nofollow" title="previous site">←</a> <a href="https://webri.ng/webring/brsnoneocities/" target="_blank" rel="noopener nofollow" title="brasileiros no neocities webring">brasileiros</a> <a href="https://webri.ng/webring/brsnoneocities/next?index=N" target="_blank" rel="noopener nofollow" title="next site">→</a></div> (N = numero que o dono do anel mandar no email) --></div><div class="zun-ring"><a href="https://friendring.my-workerzunzum-fetch.workers.dev/member/8fk6kfhbha/previous" target="_blank" rel="noopener nofollow" title="previous site">←</a> <a href="https://friendring.my-workerzunzum-fetch.workers.dev/" target="_blank" rel="noopener nofollow" title="friendring webring">friendring</a> <a href="https://friendring.my-workerzunzum-fetch.workers.dev/member/8fk6kfhbha/random" target="_blank" rel="noopener nofollow" title="random site">🎲</a> <a href="https://friendring.my-workerzunzum-fetch.workers.dev/member/8fk6kfhbha/next" target="_blank" rel="noopener nofollow" title="next site">→</a></div><div style="margin-top:8px;font-size:13px">selo 88x31 p/ colar no teu site:</div><div style="display:flex;gap:8px;align-items:center;margin-top:4px;flex-wrap:wrap"><div id="amigosSelo" title="selo do zunzum" style="width:88px;height:31px;background:#FFDD00;color:#111;border:2px solid #111;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:12px;flex:none">🐝 zunzum</div><textarea id="amigosCode" rows="3" readonly style="flex:1;min-width:200px;font-size:11px"><a href="https://perchance.org/zunzum" rel="noopener"><img src="https://user.uploads.dev/file/bfd49a053c47f44f2ca09310c1cc9ac7.png" alt="zunzum — rede da abelhinha" width="31" height="31"></a></textarea></div><div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;align-items:center"><button id="amigosCopy" type="button">copiar selo</button><span id="amigosCopyMsg" class="meta"></span></div><div style="margin-top:8px;font-size:13px">tem site anos 2000? sugere:</div><div style="display:flex;gap:6px;margin-top:4px"><input id="amigosUrl" placeholder="https://teusite.com" autocomplete="off"><button id="amigosSug" type="button">sugerir</button></div><span id="amigosMsg" class="meta"></span></div>
+</div>
+<div>
+<div class="box" id="comoMiniBox"><h3>como começar 👆 toque p/ ver onde clicar</h3><div class="zun-step"><b>1. Leia o feed e poste sem conta</b><span class="zun-where">onde clicar: aba 📰 Feed → botão Postar</span><button id="comoStep1" type="button">👆 mostrar onde clicar</button></div><div class="zun-step"><b>2. Crie seu nick pra conversar no chat e nas salas</b><span class="zun-where">onde clicar: aba 👤 Conta → criar nick</span><button id="comoStep2" type="button">👆 mostrar onde clicar</button></div><div class="zun-step"><b>3. Traga a turma pelo 📢 divulgar</b><span class="zun-where">onde clicar: topo → botão 📢 divulgar</span><button id="comoStep3" type="button">👆 mostrar onde clicar</button></div><div class="zun-mini-actions"><button id="comoMiniGo" type="button">ver como funciona</button><button id="comoMiniHide" type="button">dispensar</button></div></div>
+<div class="box" id="postBox"><h3>postar sem conta</h3><div class="meta" id="anonRow" hidden></div><div class="meta" id="zunRulesLine">proibido dado pessoal real em áreas públicas (feed, chat público, depoimentos) e conteúdo abusivo em qualquer área (feed, chat, depoimentos, DM, salas). Uso conforme o Termo (faixa etária). Sem conta e sem rosto: desabafa à vontade. Viu abuso? use 🚨 denunciar — cai na caixa do dono como denúncia.</div><textarea id="textInput" placeholder="poste anonimamente... sem mostrar o rosto"></textarea><div class="zun-post-row" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="emojiWrap" style="display:inline-flex;gap:4px;flex:none"><button id="feedEmojiBtn" class="emojiBtn" type="button" title="escolha um emoji" aria-label="escolha um emoji">😀</button><button id="feedGifBtn" class="emojiBtn gifBtn" type="button" title="GIFs da galera" aria-label="GIFs da galera" style="font-size:12px;font-weight:bold">GIF</button></span><button id="feedFmtTgl" type="button" title="formatação e anexos" aria-expanded="false">formatar</button><input type="file" id="fileInput"><input id="feedLink" class="linkIn" placeholder="ou link ou base64"><button id="postBtn">postar</button></div><span id="upEl" class="meta"></span></div>
+<div class="box zun-compact" id="chamaBox"><div class="zun-chama-row"><span style="font-size:20px" aria-hidden="true">🐝</span><div class="zun-chama-txt">Curtiu o zunzum? Cada amigo que entra pelo teu link conta no teu placar.</div><button id="chamaBtn">📣 chamar a turma</button></div></div>
+<div class="box"><h3>feed compartilhado <label class="fltTglLbl" title="como tratar mídia: embaçar, ocultar ou ver"><span class="fltLbl">filtro:</span> <select class="fltModeSel" style="width:auto;font-size:11px"><option value="hide">ocultar</option><option value="blur">embaçar</option><option value="show">ver</option></select></label></h3><div id="feedCtn"></div></div>
+</div>
+<div>
+<div class="box" id="pubBox"><h3>chat publico <label class="fltTglLbl" title="como tratar mídia: embaçar, ocultar ou ver"><span class="fltLbl">filtro:</span> <select class="fltModeSel" style="width:auto;font-size:11px"><option value="hide">ocultar</option><option value="blur">embaçar</option><option value="show">ver</option></select></label></h3><div id="pubFlip"><div id="pubFlipInner"><div id="pubFront"><div class="pubHead"><div id="pubPhotoEl">💬</div><div style="flex:1;min-width:0"><div id="pubNameEl">#geral</div><div id="pubOwnerEl" class="meta"></div><div id="pubDescEl" class="meta"></div></div><div style="display:flex;gap:4px;flex:none;flex-wrap:wrap"><button id="pubFlipBtn" title="trocar de chat">🔄</button><button id="pubNewBtn" title="novo chat público">＋</button><button id="pubLinkBtn" title="copiar link da sala">🔗</button><button id="pubModBtn" title="moderação" hidden>⚙️</button></div></div><div id="pubTopicsBar"></div><div id="pubCreateForm" hidden><b>novo chat público</b><input id="pubNewName" placeholder="nome (2-40)" maxlength="40"><input id="pubNewDesc" placeholder="descrição curta (opcional)" maxlength="140"><div style="display:flex;gap:6px"><input type="file" id="pubNewFile" accept="image/*"><input id="pubNewPhoto" class="linkIn" placeholder="ou foto https://..."></div><div style="display:flex;gap:6px;margin-top:6px;align-items:center"><button id="pubCreateBtn">criar</button><button id="pubCreateCancelBtn">cancelar</button><span id="pubCreateMsg" class="meta"></span></div></div><div id="pubLock" class="meta"></div><div id="pubLog" class="chatlog" aria-live="polite"></div><div class="chatDock" id="pubDock"><div class="fbar" id="pubBar"><select id="pubMentionSel" title="marcar @"><option value="">@ marcar...</option></select><button id="pubB" title="negrito"><b>B</b></button><button id="pubI" title="italico"><i>I</i></button><button id="pubU" title="sublinhado"><u>U</u></button><button id="pubS" title="riscado"><s>S</s></button><input type="color" id="pubColor" value="#ff0000" title="cor"><button id="pubC" title="colorir">cor</button><button id="pubAttachBtn" title="anexar foto/vídeo/link">📎</button></div><div class="attachRow" id="pubAttachRow" hidden><input type="file" id="pubFile" accept="image/gif,image/*,video/*"><input id="pubLink" class="linkIn" placeholder="ou link https://..."></div><div class="composerRow"><span class="emojiWrap"><button id="pubEmojiBtn" class="emojiBtn" type="button" title="escolha um emoji" aria-label="escolha um emoji">😀</button><button id="pubGifBtn" class="emojiBtn gifBtn" type="button" title="GIFs da galera" aria-label="GIFs da galera" style="font-size:12px;font-weight:bold">GIF</button></span><textarea id="pubInput" rows="1" maxlength="500" enterkeyhint="send" placeholder="mensagem..."></textarea><button id="pubBtn" class="sendBtn">enviar</button></div><div class="composerOpts"><label class="enterTgl"><input type="checkbox" id="pubEnterSend" checked> Enter envia</label><span class="meta" data-enter-hint>Enter envia · Shift+Enter quebra linha</span></div></div><div id="pubModPanel" hidden></div></div><div id="pubBack" hidden><div style="display:flex;gap:6px"><input id="pubSearchInput" placeholder="procurar chats..."><button id="pubBackBtn">voltar</button></div><div id="pubCountEl" class="meta"></div><div id="pubGrid"></div></div></div></div></div>
+<div class="box"><h3>chat privado</h3><div class="meta">combinem um codigo e digitem igual:</div><div style="display:flex;gap:6px"><input id="privInput" placeholder="codigo ex: eu-voce-123"><button id="privBtn">entrar</button></div><div id="privLock" class="meta"></div><div id="privLockRow" style="display:flex;gap:6px;margin-top:6px;align-items:center" hidden><button id="privLockBtn" title="quando trancada, só entra quem você aprovar">🔓 aberta</button><span id="privOwnerEl" class="meta"></span></div><div id="privReqList" style="margin-top:6px"></div><div id="privAskRow" style="display:flex;gap:6px;margin-top:6px;align-items:center" hidden><button id="privAskBtn">pedir pra entrar</button></div><div style="display:flex;gap:6px;margin-top:6px"><input id="privInviteNick" placeholder="convidar @nick..."><button id="privInviteBtn" title="envia convite com o código da sala atual">convidar</button><button id="privCopyLinkBtn" title="copia o link que entra direto na sala">copiar link</button></div><div id="privInviteMsg" class="meta"></div><div id="privLog" class="chatlog" aria-live="polite"></div><div class="chatDock" id="privDock"><div class="fbar" id="privBar"><button id="privB" title="negrito"><b>B</b></button><button id="privI" title="italico"><i>I</i></button><button id="privU" title="sublinhado"><u>U</u></button><button id="privS" title="riscado"><s>S</s></button><input type="color" id="privColor" value="#ff0000" title="cor"><button id="privC" title="colorir">cor</button><button id="privAttachBtn" title="anexar foto/vídeo/link">📎</button></div><div class="attachRow" id="privAttachRow" hidden><input type="file" id="privFile" accept="image/gif,image/*,video/*"><input id="privLink" class="linkIn" placeholder="ou link https://..."></div><div class="composerRow"><span class="emojiWrap"><button id="privEmojiBtn" class="emojiBtn" type="button" title="escolha um emoji" aria-label="escolha um emoji">😀</button><button id="privGifBtn" class="emojiBtn gifBtn" type="button" title="GIFs da galera" aria-label="GIFs da galera" style="font-size:12px;font-weight:bold">GIF</button></span><textarea id="privMsgInput" rows="1" maxlength="500" enterkeyhint="send" placeholder="mensagem privada..."></textarea><button id="privSendBtn" class="sendBtn">enviar</button></div><div class="composerOpts"><label class="enterTgl"><input type="checkbox" id="privEnterSend" checked> Enter envia</label><span class="meta" data-enter-hint>Enter envia · Shift+Enter quebra linha</span></div></div></div>
+</div>
+</div>
+<div id="seoBox" style="max-width:1100px;margin:0 auto 10px;padding:0 10px;box-sizing:border-box"><div class="box"><h3>sobre o zunzum</h3><div style="font-size:13px;line-height:1.6">O <b>zunzum</b>, a rede social da <b>abelhinha</b> 🐝, é uma rede anônima brasileira com nostalgia do <b>Orkut anos 2000</b>: feed livre sem conta, <b>comunidades</b>, <b>depoimentos e scraps</b> como no Orkut antigo, bate-papo público e salas privadas por código com conta simples de nick e senha, sem email e grátis. Tem busca com IA, perfis com @nick, sugestões de melhoria e DJ IA. Para quem sente falta do Orkut, do bate-papo UOL, do MSN e dos fóruns retrô: crie um nick, chame amigos pelo link do seu perfil e converse sem expor sua identidade.</div><div id="seoFeed" class="meta" style="margin-top:6px"></div><div class="meta" style="margin-top:6px">feito no zunzum 🐝 — <a href="https://perchance.org/zunzum">crie seu nick grátis sem email</a> e traga sua turma: feed livre + chat + DJ IA.</div></div></div>
+<div style="max-width:1100px;margin:0 auto 10px;padding:0 10px;box-sizing:border-box"><div class="meta" style="text-align:center;padding:8px">🐝 <a href="sobre.html">sobre o zunzum</a> · <a href="ajuda.html">como usar</a> · <a href="regras.html">regras</a> · <a href="https://zunzum.neocities.org/">início</a></div></div>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"zunzum","alternateName":["zunzum — orkut nostálgico, rede anônima anos 2000","zunzum — rede anonima estilo orkut","zunzum — a rede social da abelhinha"],"url":"https://zunzum.neocities.org/","description":"A rede social da abelhinha 🐝 — anônima estilo Orkut anos 2000: desabafe e fale da sua vida sem mostrar o rosto; feed livre, depoimentos, scraps e chat grátis.","inLanguage":"pt-BR","keywords":"abelhinha, abelha, site da abelhinha, orkut, nostalgia, anos 2000, rede social anônima, desabafo anonimo, falar da vida, comunidades, depoimentos, scraps, bate-papo, fórum retrô, msn, bate-papo uol"}</script>
+<!-- gutters removidos (pedido do dono 2026-11-01): sem flutuantes no desktop -->
+<div id="searchModal" hidden><div id="searchCard"><div id="searchBoxRow" style="display:flex;gap:6px"><input id="searchInput" placeholder="nome, nick ou o que procura?" autocomplete="off"><button id="goSearchBtn">ir</button><button id="closeSearchBtn">x</button><div id="searchSug" hidden></div></div><div class="meta" style="margin:6px 0">conteúdo abusivo não é listado — use termos simples</div><div id="searchFileRow" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><input type="file" id="searchFile" accept="image/*"><input id="searchLink" placeholder="ou link https://... ou cole base64"><button id="searchClearImg" title="remover foto" hidden>x</button></div><img id="searchPreview" hidden alt="pré-visualização do resultado da busca"><div id="searchStatus" class="meta"></div><div id="searchOut"></div><div id="searchAnswerRow" hidden style="display:flex;gap:6px;margin-top:6px"><input id="searchAnswerInput" placeholder="responda aqui..."><button id="sendAnswerBtn">responder</button></div><div id="searchLinks"></div></div></div>
+<div id="profModal" hidden><div id="profCard"><div style="display:flex;gap:10px;align-items:center"><div id="profAvatar">?</div><div><div id="profNick" style="font-weight:bold;font-size:16px"></div><div id="profStats" class="meta"></div></div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button id="profMentionBtn">mencionar</button><button id="profInviteBtn" title="convidar para o chat privado atual">convidar p/ privado</button><button id="profMuteBtn" title="parar de receber notificações desta pessoa">🔕 silenciar</button><button id="profBlockBtn" title="esconder posts e mensagens desta pessoa">bloquear</button><button id="profShareBtn">compartilhar</button><button id="profCloseBtn">fechar</button></div><div id="profOwnerBox" hidden></div><div id="profPg" hidden></div><div id="profDepo" style="margin-top:8px;max-height:40vh;overflow-y:auto"></div><div id="profMural" style="margin-top:8px"></div></div></div>
+<div id="divulgarModal" hidden><div id="divulgarCard"><div style="display:flex;gap:6px;align-items:center"><b>📢 divulgação automática</b><button id="divulgarCloseBtn" style="margin-left:auto">x</button></div><div class="meta">Seu link pessoal conta convites sozinho — quem criar conta por ele entra pro seu ranking.</div><div style="display:flex;gap:6px;margin:8px 0"><input id="divulgarLink" readonly style="flex:1" placeholder="faça login p/ gerar seu link..."><button id="divulgarCopyAutoBtn">copiar</button></div><div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><button id="divulgarShareBtn">📤 compartilhar</button><button id="divulgarWaBtn">whatsapp</button><button id="divulgarTgBtn">telegram</button><span id="divulgarAutoMsg" class="meta"></span></div><div class="meta" id="divulgarMyCount"></div><div id="divulgarTop" style="margin-top:6px;font-size:13px"></div><hr><div class="meta">Precisa de texto? A IA cria, você cola nos fóruns.</div><div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap"><select id="divulgarStyle" style="flex:1"><option value="forum">post de fórum</option><option value="curto">curto p/ comentário</option><option value="topico">tópico completo</option><option value="convidativo">convite whatsapp/telegram</option><option value="assinatura">assinatura fixa p/ perfil</option></select><button id="divulgarGenBtn">✨ gerar com IA</button></div><textarea id="divulgarText" rows="6" placeholder="clique em gerar com IA..."></textarea><div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap"><button id="divulgarCopyBtn">copiar texto</button><button id="divulgarCopyLinkBtn">copiar link</button><button id="divulgarQrBtn" title="gera o QR do seu link pessoal (100% local, sem rede)">QR</button><span id="divulgarMsg" class="meta"></span></div><div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center" id="divulgarQrRow" hidden><canvas id="divulgarQr" width="180" height="180" style="border:1px solid #b6c9db;border-radius:8px;background:#fff" title="segure p/ salvar a imagem"></canvas><span id="divulgarQrMsg" class="meta"></span></div><div class="meta" style="margin-top:8px">onde postar: grupos do Facebook de divulgação, Lemmy BR, servidores Discord com canal #divulgação, grupos Telegram/WhatsApp de amizade. Dica: não faça spam — adapte o texto e participe da conversa.</div><div class="meta" style="margin-top:8px">feito no zunzum 🐝 — todo texto gerado aqui já vem com seu link; cole com 1 frase de contexto, sem spam.</div></div></div>
+<!-- src/notfound/ canonical: src/notfound/card.html -->
+<template id="notfoundTpl"><div class="nfCard"><div class="nfIcon" data-nf="icon">🧭</div><div class="nfTitle" data-nf="title">link inválido</div><div class="nfMsg" data-nf="msg"></div><div class="nfRow"><button data-nf="ok">fechar</button></div></div></template>
+<link rel="stylesheet" href="src/chatux.css">
+<link rel="stylesheet" href="src/zundm.css">
+<link rel="stylesheet" href="src/zunpet.css">
+<link rel="stylesheet" href="src/zuncaptcha.css">
+<!-- Tailwind vendorado (CSS estático, sem JS de terceiro).
+     O Play CDN foi removido em 2026-10-28 (segurança C3: JS sem SRI na origem
+     = XSS global se o CDN for comprometido). Só 4 utilities eram usadas
+     (#atalhosBox): ver src/tailwind-vendor.css. Não reimporte o CDN;
+     adicione a utility nova lá. Ver src/LAYOUT.md. -->
+<link rel="stylesheet" href="src/tailwind-vendor.css">
+<!-- PWA (declarativo, sem JS): manifest + cor do tema + ícones da abelha. -->
+<link rel="manifest" href="src/manifest.webmanifest">
+<link rel="icon" type="image/png" href="https://zunzum.neocities.org/src/img/abelhinha.png">
+<link rel="apple-touch-icon" href="https://zunzum.neocities.org/src/img/abelhinha.png">
+<meta name="theme-color" content="#6aa5d7">
+<script>
+/* Compat: window.zunTwRescan existia p/ o CDN gerar classes sob demanda.
+   Com CSS estático não há o que gerar — virou no-op (mantido p/ não quebrar
+   chamadores futuros; se precisar de utility nova, edite o CSS). */
+window.zunTwRescan = function(){ return true; };
+</script>
+<div id="zCombo" hidden role="status" aria-live="polite"></div>
+<script src="src/i18n.js"></script>
+<script src="src/vision-frames.js"></script>
+<script src="src/ai-quota.js"></script>
+<script>window.ZUN_SUPABASE_URL = "https://rjvbfhkgbmzkilrysqrf.supabase.co"; window.ZUN_SUPABASE_KEY = "sb_publishable_Kd6t9TzD8uq4OFeyudbADw_Mf-JYmq8"; window.ZUN_FETCH_URL = "https://soft-forest-41e0.my-workerzunzum-fetch.workers.dev";</script>
+<script>/* DB fora do ar? manda p/ /down.html (ver src/standalone/down.html). 1x por sessão; "continuar assim mesmo" grava zzDownPass e não desvia de novo. Up = HTTP <500 (401 sem chave = vivo). */
+(function(){try{if(sessionStorage.getItem('zzDownPass')||sessionStorage.getItem('zzDownSeen'))return;var u=(window.ZUN_SUPABASE_URL||'')+'/rest/v1/';if(!window.ZUN_SUPABASE_URL)return;var done=false;function go(){if(done)return;done=true;try{sessionStorage.setItem('zzDownSeen','1');}catch(e){}location.replace('/down.html');}var t=setTimeout(go,7000);fetch(u,{cache:'no-store'}).then(function(r){clearTimeout(t);if(r.status>=500)go();}).catch(function(){clearTimeout(t);go();});}catch(e){}})();</script>
+<script>
+/* Espelho Neocities/GitHub (ver src/NEOCITIES.md): o Perchance injeta de graça
+   window.generatorName + window.root (main.pjs/plugins). Fora do Perchance
+   esses globais não existem — o shim abaixo garante fallback sem mudar nada
+   no Perchance (onde já existem, é no-op). */
+try{ window.generatorName = window.generatorName || "zunzum"; }catch(e){}
+try{ if(typeof window.root === "undefined"){ window.root = (typeof root !== "undefined" ? root : {}); } }catch(e){ try{ window.root = {}; }catch(_){} }
+try{ if(typeof root === "undefined" && window.root){ root = window.root; } }catch(e){}
+</script>
+<script src="src/zunbase.js"></script>
+<script src="src/zuneco.js"></script>
+<script src="src/zunsaver.js"></script>
+<script>try{if(window.__zunBoot)window.__zunBoot(0.22,"mods")}catch(e){}</script>
+<script>
+/* Mirror-only (NUNCA no Perchance): o root do engine é um proxy sensível
+   (o ai-text-plugin avisa no próprio código) — executar o equiv nele
+   quebra os imports (generateText/comments somem). Fora do Perchance
+   (Neocities/GitHub: sem generatorPublicId e host fora de perchance.org)
+   injeta src/seo-head.js (cabeçalho de descoberta) + src/root-equiv.js
+   (equivale main.pjs/plugins no espelho). */
+try{
+  var __onPerchance = false;
+  try{
+    __onPerchance = !!window.generatorPublicId ||
+      /(^|\.)perchance\.org$/.test(String(location.hostname || ""));
+  }catch(_h){}
+  if(!__onPerchance){
+    var __sh = document.createElement("script");
+    __sh.src = "src/seo-head.js";
+    document.currentScript.after(__sh);
+    var __eq = document.createElement("script");
+    __eq.src = "src/root-equiv.js";
+    __sh.after(__eq);
+    /* triagem local de foto (sem IA, sem rede): o filtro do espelho usa se
+       estiver carregado; sem ele cai p/ "não verificada". Ver src/app.js. */
+    var __sk = document.createElement("script");
+    __sk.src = "src/zunskinscan.js";
+    __eq.after(__sk);
+  }
+}catch(e){}
+</script>
+<script>window.ZUN_SUPABASE_URL = "https://rjvbfhkgbmzkilrysqrf.supabase.co"; window.ZUN_SUPABASE_KEY = "sb_publishable_Kd6t9TzD8uq4OFeyudbADw_Mf-JYmq8";</script>
+<script src="src/zuncaptcha.js"></script>
+<script src="src/site-guard.js"></script>
+<script src="src/sb.js"></script>
+<script>try{if(window.__zunBoot)window.__zunBoot(0.38,"bank")}catch(e){}</script>
+<script src="src/sb2.js"></script>
+<script src="src/sb3.js"></script>
+<script src="src/janitor.js"></script>
+<script src="src/zunkv.js"></script>
+<!-- zunassunto ANTES do app.js: o 1º paintFeed (snapshot, síncrono) precisa do
+  pin no ato; depois do app.js o fixo nascia sem pin/destaque e o patch nunca corrigia -->
+<script src="src/zunassunto.js"></script>
+<script src="src/app.js"></script>
+<script src="src/zunwin.js"></script>
+<script src="src/zunden.js"></script>
+<script src="src/zunfmt.js"></script>
+<script>window.ZUN_BACKEND_URL = "https://zunzum-auth.bonto.run";</script>
+<script>window.ZUN_BACKEND_URL = "https://zunzum-auth.bonto.run";</script>
+<script src="src/backend-auth.js"></script>
+<script src="src/media-proxy.js"></script>
+<script src="src/rls-check.js"></script>
+<script src="src/zunstore.js"></script>
+<script src="src/zunown.js"></script>
+<script src="src/zunfix.js"></script>
+<script src="src/zunfreeze.js"></script>
+<script src="src/zunscramble.js"></script>
+<script src="src/zunperfil.js"></script>
+<script src="src/zunavatar.js"></script>
+<script src="src/zunmural.js"></script>
+<script src="src/zunemoji.js"></script>
+<script src="src/gifmoji.js"></script>
+<script src="src/chatux.js"></script>
+<script src="src/zunfun.js"></script>
+<script src="src/zundme2e.js"></script>
+<script src="src/zundm.js"></script>
+<script src="src/nodal.js"></script>
+<script src="src/zunfilebtn.js"></script>
+<script src="src/notify.js"></script>
+<!-- festas.js CEDO (ver index.html do workspace): veste a tela de boot. -->
+<script src="src/festas.js"></script>
+<script src="src/zunresp.js"></script>
+<script src="src/zunbadges.js"></script>
+<script src="src/seo.js"></script>
+<script src="src/amigos.js"></script>
+<script src="src/mobile.js"></script>
+<script src="src/termos.js"></script>
+<script src="src/zunspot.js"></script>
+<script>
+/* atalhos (área nova, Tailwind): só clica em coisas que já existem, sem lógica nova */
+try{
+document.getElementById("atalhosGoPost").onclick=function(){ try{window.zunMobileGo("feed")}catch(e){} try{var t=document.getElementById("textInput"); if(t) t.focus({preventScroll:true})}catch(e){} };
+document.getElementById("atalhosGoChats").onclick=function(){ try{window.zunMobileGo("chats")}catch(e){} };
+document.getElementById("atalhosGoSearch").onclick=function(){ try{document.getElementById("searchBtn").click()}catch(e){} };
+document.getElementById("atalhosGoDiv").onclick=function(){ try{document.getElementById("divulgarBtn").click()}catch(e){} };
+document.getElementById("chamaBtn").onclick=function(){ try{document.getElementById("divulgarBtn").click()}catch(e){} };
+try{
+var cmb=document.getElementById("comoMiniBox"), cmg=document.getElementById("comoMiniGo"), cmh=document.getElementById("comoMiniHide");
+try{ if(localStorage.getItem("zunzumComoMiniHide")==="1" && cmb) cmb.hidden=true; }catch(e){}
+function zunComoSpot(tab, target, o){
+  try{ if(window.zunMobileGo && tab) window.zunMobileGo(tab); }catch(e){}
+  setTimeout(function(){ try{ if(window.zunSpot) window.zunSpot(target, o); }catch(e){} }, tab?160:30);
+}
+var cs1=document.getElementById("comoStep1");
+if(cs1) cs1.onclick=function(){ zunComoSpot("feed","postBox",{tab:"feed",label:"postar aqui",path:"aba 📰 Feed → botão Postar",click:"postBtn"}); };
+var cs2=document.getElementById("comoStep2");
+if(cs2) cs2.onclick=function(){ zunComoSpot("conta","authBox",{tab:"conta",label:"crie seu nick aqui",path:"aba 👤 Conta → criar nick"}); };
+var cs3=document.getElementById("comoStep3");
+if(cs3) cs3.onclick=function(){
+  try{ window.scrollTo({top:0,behavior:"smooth"}); }catch(e){ try{window.scrollTo(0,0);}catch(e2){} }
+  setTimeout(function(){ try{ if(window.zunSpot) window.zunSpot("divulgarBtn",{label:"divulgar aqui",path:"topo → botão 📢 divulgar",click:"divulgarBtn"}); }catch(e){} },120);
+};
+if(cmg) cmg.onclick=function(){ try{ if(window.zunMobileGo) window.zunMobileGo("mais"); }catch(e){} setTimeout(function(){ try{ if(window.zunSpot) window.zunSpot("comoBox",{tab:"mais",label:"como funciona aqui",path:"aba ☰ Mais → como funciona"}); }catch(e){} },160); };
+if(cmh) cmh.onclick=function(){ try{ localStorage.setItem("zunzumComoMiniHide","1"); }catch(e){} if(cmb) cmb.hidden=true; };
+var pb=document.getElementById("postBox"), ft=document.getElementById("feedFmtTgl");
+if(pb) pb.classList.add("zun-collapsed");
+if(ft) ft.onclick=function(){ try{ var c=pb.classList.toggle("zun-collapsed"); ft.setAttribute("aria-expanded", c?"false":"true"); ft.textContent=c?"formatar":"ocultar"; }catch(e){} };
+}catch(e){}
+}catch(e){}
+</script>
+<script>
+/* Gutters removidos (pedido do dono 2026-11-01). */
+try{ ["zunGutPost","zunGutChats","zunGutSearch","zunGutDiv"].forEach(function(id){ try{ var el=document.getElementById(id); if(el&&el.parentNode) el.parentNode.removeChild(el); }catch(e){} }); }catch(e){}
+window._lazyQueue = ["src/divulgar.js","src/blob.js","src/search.js","src/music.js","src/mirror.js","src/zunzunzinha.js","src/tour.js","src/zun-welcome.js","src/desafio.js","src/djsync.js","src/zunpet.js","src/medicao.js","src/zunhuman.js","src/zuncount.js"];
+window._lazyStarted = false;
+function _loadLazyNow(){
+  if(window._lazyStarted) return; window._lazyStarted = true;
+  var q = window._lazyQueue.slice();
+  (function next(){
+    if(!q.length) return;
+    var s = document.createElement("script"); s.src = q.shift(); s.async = false;
+    s.onload = s.onerror = next;
+    document.body.appendChild(s);
+  })();
+}
+try{
+  if("requestIdleCallback" in window) requestIdleCallback(_loadLazyNow, {timeout:4000});
+  else setTimeout(_loadLazyNow, 2500);
+  ["pointerdown","touchstart","keydown"].forEach(function(ev){
+    document.addEventListener(ev, _loadLazyNow, {passive:true});
+  });
+  setTimeout(_loadLazyNow, 8000);
+}catch(e){ setTimeout(_loadLazyNow, 2500); }
+</script>
+<script>
+/* Contador de views (prova social): API própria do Perchance, só leitura.
+   textContent (sem HTML) + falha silenciosa. Não conta como visita extra.
+   Atualiza sozinho sem reload: busca na hora + a cada 60s + ao voltar pra aba.
+   Espelho (fora do Perchance): usa as views do próprio Neocities
+   (neocities.org/site/<slug>, parse do <div class="stat"><strong>N</strong>
+   <span>views</span>) via ZunOwn.fetchUrl (Bonto configurado+logado);
+   sem Bonto o contador segue oculto (falha silenciosa). Cache 1h em
+   localStorage p/ não martelar. */
+try{
+  window.zunNcViews = function(){
+    try{
+      var el = document.getElementById("viewsEl");
+      if(!el) return Promise.resolve();
+      try{
+        var c = JSON.parse(localStorage.getItem("zunNcViews")||"null");
+        if(c && isFinite(c.v) && (Date.now()-c.at) < 3600000){
+          el.textContent = Number(c.v).toLocaleString("pt-BR") + " views";
+          return Promise.resolve();
+        }
+      }catch(e){}
+      if(!window.ZunOwn || !window.ZunOwn.fetchUrl) return Promise.resolve();
+      var slug = String(window.generatorName||"zunzum").toLowerCase().replace(/[^a-z0-9-]/g,"").slice(0,40) || "zunzum";
+      return window.ZunOwn.fetchUrl("https://neocities.org/site/"+slug).then(function(r){ return r.text(); }).then(function(t){
+        var m = /<div class="stat"><strong>([\d,]+)<\/strong>\s*<span>views<\/span>/.exec(String(t||""));
+        if(!m) return;
+        var v = parseInt(m[1].replace(/,/g,""),10);
+        if(!isFinite(v)) return;
+        try{ localStorage.setItem("zunNcViews", JSON.stringify({v:v, at:Date.now()})); }catch(e){}
+        el.textContent = Number(v).toLocaleString("pt-BR") + " views";
+      }).catch(function(){});
+    }catch(e){ return Promise.resolve(); }
+  };
+  window.zunUpdateViews = function(){
+    try{
+      var offP = false;
+      try{ offP = !window.generatorPublicId && !/(^|\.)perchance\.org$/.test(String(location.hostname||"")); }catch(_){ offP = false; }
+      if(offP) return window.zunNcViews();
+    }catch(e){}
+    return fetch("https://perchance.org/api/getGeneratorStats?name="+encodeURIComponent(window.generatorName||"zunzum"),{cache:"no-store"})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(j){
+        var v = j && j.data && j.data.views;
+        if(!isFinite(v)) return;
+        var el = document.getElementById("viewsEl");
+        if(!el) return;
+        el.textContent = Number(v).toLocaleString("pt-BR") + " views";
+      })
+      .catch(function(){});
+  };
+  window.zunUpdateViews();
+  setInterval(window.zunUpdateViews, 60000);
+  document.addEventListener("visibilitychange", function(){
+    if(!document.hidden) window.zunUpdateViews();
+  });
+}catch(e){}
+</script>
+
+</html>

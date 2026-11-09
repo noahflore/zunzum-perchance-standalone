@@ -1,0 +1,474 @@
+(function(){
+"use strict";
+var MOB = matchMedia("(max-width:900px)").matches || matchMedia("(pointer:coarse)").matches || (navigator.userAgent||"").length>0 && /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent||"");
+if(!document.querySelector('meta[name="viewport"]')){
+  var m = document.createElement("meta"); m.name = "viewport"; m.content = "width=device-width,initial-scale=1,viewport-fit=cover";
+  document.head.appendChild(m);
+}
+var css = document.createElement("style"); css.id = "zunMobileCss";
+css.textContent = ".post{content-visibility:auto;contain-intrinsic-size:auto 60px}"
++"#zunBadge{display:inline-block;min-width:20px;text-align:center;background:#d33;color:#fff;border-radius:10px;font-size:12px;font-weight:bold;padding:1px 6px;margin-left:8px;cursor:pointer;vertical-align:middle}"
++"#zunBadge[hidden]{display:none!important}"
++"#zunNotifPop{position:fixed;top:52px;right:12px;z-index:9999;background:#fff;border:1px solid #6aa5d7;border-radius:8px;padding:8px 10px;font-size:13px;max-width:280px;box-shadow:0 4px 14px #0003;color:#222;text-align:left}"
++"#zunNotifPop button{margin:2px 4px 2px 0;font-size:12px}"
++"#zunSoundBtn{margin-left:6px}"
++"input,textarea,select{font-size:16px}"
++"@media(max-width:900px){.chatlog{max-height:38vh}#feedCtn{max-height:60vh}#top{position:sticky;top:0;z-index:40}#top button{min-height:36px;padding:6px 10px}#wrap{padding:0 6px}.post img,.post video,.chatimg{height:auto}}"
++"@media(pointer:coarse){.fbar button{min-height:36px;min-width:36px}#pubBtn,#privSendBtn,#postBtn{min-height:44px;padding:8px 14px}}"
++"@media(prefers-reduced-motion:reduce){.spin{animation:none}}";
+document.head.appendChild(css);
+var BASE_TITLE = document.title || "zunzum";
+var store = { get: function(k,d){ try{ var v = localStorage.getItem(k); return v==null?d:v; }catch(e){ return d; } }, set: function(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+var soundOn = store.get("zunzumSound","1") !== "0";
+/* Notificações por área (feed/pub/priv): ON por padrão. OFF = sem badge/som/sysNotify p/ a área (nem menção). Chaves: zunzumNotif_feed/_pub/_priv ("0"=off, ausente="1"). */
+function notifOn(kind){
+  try{
+    if(kind!=="feed"&&kind!=="pub"&&kind!=="priv") return true;
+    var v = null; try{ v = localStorage.getItem("zunzumNotif_"+kind); }catch(e){ v = null; }
+    return v!=="0";
+  }catch(e){ return true; }
+}
+function notifSet(kind, on){
+  try{ localStorage.setItem("zunzumNotif_"+kind, on?"1":"0"); }catch(e){}
+  try{ paintNotifToggles(); }catch(e){}
+  try{ var p = document.getElementById("zunNotifPop"); if(p && !p.hidden) showPop(); }catch(e){}
+}
+function paintNotifToggles(){
+  try{
+    ["feed","pub","priv"].forEach(function(k){
+      var b = document.querySelector('[data-zun-notif="'+k+'"]');
+      if(!b) return;
+      var on = notifOn(k);
+      /* SVG currentColor (nítido dia/noite/tema); titles em PT p/ o walker traduzir */
+      try{
+        if(typeof zunSvgBellBtn==="function" && typeof zunSvgBellOffBtn==="function"){ if(on) zunSvgBellBtn(b); else zunSvgBellOffBtn(b); }
+        else b.textContent = on ? "🔔" : "🔕";
+      }catch(e){ try{ b.textContent = on ? "🔔" : "🔕"; }catch(e2){} }
+      var kn = (k==="feed"?"feed":k==="pub"?"chat público":"privado");
+      b.title = on ? ("avisos de "+kn+" LIGADOS — clique p/ desligar") : ("avisos de "+kn+" DESLIGADOS — clique p/ ligar");
+      b.setAttribute("aria-pressed", on?"true":"false");
+    });
+  }catch(e){}
+}
+function ensureNotifToggles(){
+  try{
+    var defs = [
+      {box:"feedCtn", kind:"feed"},
+      {box:"pubBox", kind:"pub"},
+      {box:"privLog", kind:"priv"}
+    ];
+    defs.forEach(function(d){
+      try{
+        if(document.querySelector('[data-zun-notif="'+d.kind+'"]')) return;
+        var anchor = document.getElementById(d.box);
+        if(!anchor) return;
+        var boxEl = anchor.closest ? anchor.closest(".box") : null;
+        if(!boxEl) return;
+        var h = boxEl.querySelector ? boxEl.querySelector("h3") : null;
+        if(!h) return;
+        var b = document.createElement("button");
+        b.setAttribute("data-zun-notif", d.kind);
+        b.type = "button";
+        b.style.cssText = "margin-left:6px;font-size:12px;padding:1px 7px;vertical-align:middle";
+        b.onclick = function(ev){ try{ ev.stopPropagation(); }catch(e){} notifSet(d.kind, !notifOn(d.kind)); };
+        h.appendChild(b);
+      }catch(e){}
+    });
+    paintNotifToggles();
+  }catch(e){}
+}
+var AC = null, lastBeep = 0;
+function ac(){
+  if(!soundOn) return null;
+  try{
+    if(!AC) AC = new (window.AudioContext||window.webkitAudioContext)();
+    if(AC.state === "suspended") AC.resume();
+    return AC;
+  }catch(e){ return null; }
+}
+function tone(f, t0, dur, type, vol){
+  var c = ac(); if(!c) return;
+  try{
+    var o = c.createOscillator(), g = c.createGain();
+    o.type = type || "sine"; o.frequency.value = f;
+    var t = c.currentTime + (t0||0);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol||0.18, t+0.015);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+    o.connect(g); g.connect(c.destination);
+    o.start(t); o.stop(t+dur+0.05);
+  }catch(e){}
+}
+var JINGLES = {
+  soft: [[880,0,0.12]],
+  mention: [[1320,0,0.1],[1760,0.09,0.14]],
+  priv: [[660,0,0.12],[990,0.1,0.14]],
+  invite: [[784,0,0.12],[1046,0.11,0.16]],
+  depo: [[523,0,0.12],[659,0.1,0.12],[784,0.2,0.18]],
+  peak: [[523,0,0.1],[659,0.09,0.1],[784,0.18,0.1],[1046,0.27,0.2]]
+};
+function play(kind){
+  if(!soundOn) return;
+  var now = Date.now();
+  if(now - lastBeep < 1800 && kind !== "peak" && kind !== "invite") return;
+  lastBeep = now;
+  (JINGLES[kind]||JINGLES.soft).forEach(function(n){ tone(n[0],n[1],n[2],"sine",0.16); });
+}
+function buzz(p){ try{ if(navigator.vibrate && MOB) navigator.vibrate(p||[40]); }catch(e){} }
+["pointerdown","touchstart","keydown"].forEach(function(ev){
+  document.addEventListener(ev, function(){ try{ ac(); }catch(e){} }, {passive:true, once:false});
+});
+var notifAsked = false;
+["pointerdown","touchstart"].forEach(function(ev){
+  document.addEventListener(ev, function(){
+    if(notifAsked) return; notifAsked = true;
+    try{ if("Notification" in window && Notification.permission === "default"){ Notification.requestPermission().catch(function(){}); } }catch(e){ try{ Notification.requestPermission(); }catch(e2){} }
+  }, {passive:true});
+});
+function sysNotify(title, body, tag){
+  try{
+    if(!("Notification" in window) || Notification.permission !== "granted" || !document.hidden) return;
+    var n = new Notification(title, {body:String(body||"").slice(0,140), tag:tag||"zunzum", renotify:true});
+    n.onclick = function(){ try{ window.focus(); }catch(e){} try{ n.close(); }catch(e2){} clearAll(); };
+    setTimeout(function(){ try{ n.close(); }catch(e){} }, 9000);
+  }catch(e){}
+}
+var unread = {feed:0, pub:0, priv:0, inv:0, depo:0, mural:0};
+var topBar = document.getElementById("top");
+var topBtns = document.getElementById("topBtns") || topBar;
+var badge = document.getElementById("zunBadge");
+if(!badge && topBar){
+  badge = document.createElement("span");
+  badge.id = "zunBadge"; badge.hidden = true; badge.title = "notificações não lidas — clique p/ ver";
+  badge.onclick = function(){ togglePop(); };
+  topBtns.appendChild(badge);
+} else if(badge){ badge.onclick = function(){ togglePop(); }; try{ if(badge.parentNode!==topBtns) topBtns.appendChild(badge); }catch(e){} }
+var sndBtn = document.getElementById("zunSoundBtn");
+if(!sndBtn && topBar){
+  sndBtn = document.createElement("button");
+  sndBtn.id = "zunSoundBtn"; sndBtn.title = "ligar/desligar som de notificação";
+  topBtns.appendChild(sndBtn);
+} else if(sndBtn){ try{ if(sndBtn.parentNode!==topBtns) topBtns.appendChild(sndBtn); }catch(e){} }
+function paintSnd(){ if(sndBtn) sndBtn.textContent = soundOn ? "🔊" : "🔇"; }
+if(sndBtn) sndBtn.onclick = function(){ soundOn = !soundOn; store.set("zunzumSound", soundOn?"1":"0"); paintSnd(); if(soundOn) play("soft"); };
+paintSnd();
+var nightBtn = document.getElementById("zunNightBtn");
+if(!nightBtn && topBar){
+  nightBtn = document.createElement("button");
+  nightBtn.id = "zunNightBtn"; nightBtn.title = "modo noturno: auto / ligado / desligado";
+  nightBtn.onclick = function(){
+    var cur = store.get("zunzumNight","auto");
+    store.set("zunzumNight", cur === "auto" ? "off" : cur === "off" ? "on" : "auto");
+    paintNight();
+  };
+  topBtns.appendChild(nightBtn);
+} else if(nightBtn){ try{ if(nightBtn.parentNode!==topBtns) topBtns.appendChild(nightBtn); }catch(e){} }
+function nightActive(){
+  var p = store.get("zunzumNight","auto");
+  if(p === "on") return true;
+  if(p === "off") return false;
+  var h = new Date().getHours(); return h >= 19 || h < 6;
+}
+function paintNight(){
+  try{
+    var el = document.getElementById("zunNightCss"), hasSite = null;
+    try{ hasSite = localStorage.getItem("orkutSiteTheme"); }catch(e){}
+    if(nightBtn) nightBtn.textContent = nightActive() && !hasSite ? "☀️" : "🌙";
+    try{ document.body.classList.toggle("zun-night", !!(nightActive() && !hasSite)); }catch(e){}
+    if(!nightActive() || hasSite){ if(el) el.remove(); try{ document.body.classList.remove("zun-night"); }catch(e){} return; }
+    if(!el){ el = document.createElement("style"); el.id = "zunNightCss"; document.head.appendChild(el); }
+    el.textContent = "body{background:#141422!important;color:#e8e8f2!important}#wrap .box,#seoBox,#seoBox .box{background:#1e1e30!important;color:#e8e8f2!important;border-color:#3a3a5c!important}#wrap .box h3,#seoBox h3{background:#2a2a45!important;color:#cfd2ff!important}#top{background:#1e1e30!important;color:#e8e8f2!important}#top .meta{color:#cfd2ff!important}#top button{background:#2a2a45!important;color:#e8e8f2!important;border-color:#4a4a6c!important}#zunNotifPop{background:#1e1e30!important;color:#e8e8f2!important;border-color:#3a3a5c!important}#wrap input,#wrap select,#wrap textarea{background:#262640!important;color:#e8e8f2!important;border-color:#3a3a5c!important}#wrap .box button,#seoBox button{background:#2a2a45!important;color:#e8e8f2!important;border-color:#3a3a5c!important}#wrap .post[data-ai-post]{background:#2a2a45!important;border-color:#3a3a5c!important}#seoBox a{color:#cfd2ff!important}#profCard{background:#1e1e30!important;color:#e8e8f2!important}#profCard .meta{color:#aaa!important}#profCard button{background:#2a2a45!important;color:#e8e8f2!important;border-color:#3a3a5c!important}#profCard input,#profCard select,#profCard textarea{background:#262640!important;color:#e8e8f2!important;border-color:#3a3a5c!important}#profCard a{color:#cfd2ff!important}#profCard .chatname{color:#cfd2ff!important}#profMural h3{color:#cfd2ff!important}#searchCard{background:#1e1e30!important;color:#e8e8f2!important}#searchCard .meta{color:#aaa!important}#searchCard input,#searchCard select,#searchCard textarea{background:#262640!important;color:#e8e8f2!important;border-color:#3a3a5c!important}#searchCard button{background:#2a2a45!important;color:#e8e8f2!important;border-color:#3a3a5c!important}#divulgarCard{background:#1e1e30!important;color:#e8e8f2!important}#divulgarCard .meta{color:#aaa!important}#divulgarCard input,#divulgarCard select,#divulgarCard textarea{background:#262640!important;color:#e8e8f2!important;border-color:#3a3a5c!important}#divulgarCard button{background:#2a2a45!important;color:#e8e8f2!important;border-color:#3a3a5c!important}.chatlog div{border-color:#333!important}.mention,.mention-me{color:#111!important}";
+    try{ el.textContent += "#wrap .box .post[data-ann-post],#zunMPages .post[data-ann-post]{background:#3a2c07!important;color:#ffe9b0!important;border:2px solid #ffb300!important;border-radius:8px!important;padding:8px!important;box-shadow:0 2px 8px rgba(0,0,0,.5)!important}#wrap .box .post[data-ann-post] .meta,#zunMPages .post[data-ann-post] .meta{color:#ffd97a!important;opacity:.9!important}#wrap .box .post[data-ann-post] .chatname,#zunMPages .post[data-ann-post] .chatname{color:#ffd97a!important}#wrap .box .post[data-ann-post] a,#zunMPages .post[data-ann-post] a{color:#ffd97a!important}#wrap .box .post[data-ann-post] button,#zunMPages .post[data-ann-post] button{background:#5a4308!important;color:#ffe9b0!important;border-color:#ffb300!important}#wrap .box .post[data-ann-post] input,#zunMPages .post[data-ann-post] input,#wrap .box .post[data-ann-post] textarea,#zunMPages .post[data-ann-post] textarea{background:#262640!important;color:#ffe9b0!important;border-color:#ffb300!important}#wrap .box .post[data-ai-post],#zunMPages .post[data-ai-post]{background:#23233a!important;border-color:#3a3a5c!important}#peakToast{background:#3a2c07!important;color:#ffe9b0!important;border-color:#ffb300!important}"; }catch(e){}
+  }catch(e){}
+}
+paintNight();
+function total(){ return unread.feed+unread.pub+unread.priv+unread.inv+unread.depo+(unread.mural||0); }
+var KIND_LABEL = {feed:"feed", pub:"chat público", priv:"privado", inv:"convites", depo:"depoimentos", mural:"mural"};
+var KIND_TARGET = {feed:"feedCtn", pub:"pubLog", priv:"privLog", inv:"privInviteMsg", depo:"profDepo", mural:"profMural"};
+function describe(){
+  var parts = [];
+  ["feed","pub","priv","inv","depo","mural"].forEach(function(k){ if(unread[k]>0) parts.push(unread[k]+" "+KIND_LABEL[k]); });
+  return parts.length ? parts.join(", ") : "nada";
+}
+function togglePop(){
+  var p = document.getElementById("zunNotifPop");
+  if(p && !p.hidden){ p.hidden = true; djMinSet(false); return; }
+  showPop();
+}
+function showPop(){
+  var p = document.getElementById("zunNotifPop");
+  if(!p){ p = document.createElement("div"); p.id = "zunNotifPop"; document.body.appendChild(p); }
+  p.innerHTML = "";
+  var t = document.createElement("div");
+  t.style.fontWeight = "bold"; t.style.marginBottom = "4px";
+  t.textContent = total()>0 ? "não lidas ("+total()+"):" : "nenhuma notificação";
+  p.appendChild(t);
+  ["feed","pub","priv","inv","depo","mural"].forEach(function(k){
+    if(!(unread[k]>0)) return;
+    var row = document.createElement("div");
+    var b = document.createElement("button");
+    b.textContent = "ver "+KIND_LABEL[k]+" ("+unread[k]+")";
+    b.onclick = function(){ goKind(k); };
+    row.appendChild(b);
+    p.appendChild(row);
+  });
+  var nt = document.createElement("div");
+  nt.style.cssText = "margin:6px 0 4px;font-size:12px;text-align:left";
+  var ntT = document.createElement("div");
+  ntT.style.fontWeight = "bold";
+  ntT.textContent = "avisos (padrão: ligados):";
+  nt.appendChild(ntT);
+  [["feed","feed"],["pub","chat público"],["priv","privado"]].forEach(function(pair){
+    var k = pair[0], label = pair[1];
+    var lab = document.createElement("label");
+    lab.style.cssText = "display:flex;gap:6px;align-items:center;margin:2px 0;cursor:pointer";
+    var cb = document.createElement("input");
+    cb.type = "checkbox"; cb.checked = notifOn(k); cb.style.width = "auto";
+    cb.onchange = function(){ notifSet(k, cb.checked); };
+    var sp = document.createElement("span");
+    sp.textContent = label;
+    lab.appendChild(cb); lab.appendChild(sp); nt.appendChild(lab);
+  });
+  p.appendChild(nt);
+  var clr = document.createElement("button");
+  clr.textContent = total()>0 ? "limpar tudo" : "fechar";
+  clr.onclick = function(){ clearAll(); };
+  p.appendChild(clr);
+  p.hidden = false;
+  try{ if(document.body.classList.contains("zun-mobile")) djMinSet(true); }catch(e){}
+}
+function djMinSet(min){
+  try{
+    var dj = document.getElementById("djBar"); if(!dj) return false;
+    if(min){ if(!dj.classList.contains("djMin")){ dj.classList.add("djMin"); window._djAutoMin = true; } }
+    else if(window._djAutoMin){ window._djAutoMin = false; dj.classList.remove("djMin"); }
+    try{ var mb = dj.querySelector('button[title="minimizar / expandir dj ia"]'); if(mb) mb.textContent = dj.classList.contains("djMin") ? "+" : "–"; }catch(e2){}
+    return true;
+  }catch(e){ return false; }
+}
+function goKind(k){
+  clearKind(k);
+  if(total()<=0){ var p = document.getElementById("zunNotifPop"); if(p) p.hidden = true; }
+  else showPop();
+  if(k==="mural"){ try{ var o = window.__zunLastMural; if(o && typeof openProfile==="function"){ openProfile(o); return; } }catch(e){} }
+  var id = KIND_TARGET[k];
+  var el = id ? document.getElementById(id) : null;
+  if(el){ try{ el.scrollIntoView({block:"nearest"}); }catch(e){} try{ var f = el.querySelector("input,textarea"); if(f) f.focus({preventScroll:true}); }catch(e2){} }
+}
+function paint(){
+  var t = total();
+  try{ if(window.__zunDMUnreadTotal) t += window.__zunDMUnreadTotal()||0; }catch(e){}
+  if(badge){ badge.hidden = t<=0; badge.textContent = t>99 ? "99+" : String(t); badge.title = t>0 ? describe()+" — clique p/ ver" : "notificações não lidas"; }
+  if(t<=0){ var p = document.getElementById("zunNotifPop"); if(p) p.hidden = true; djMinSet(false); }
+  try{
+    document.title = t>0 ? "("+t+") "+BASE_TITLE : BASE_TITLE;
+    var fav = document.querySelector("link[rel~='icon']");
+    if(fav && !fav.dataset.orig) fav.dataset.orig = fav.href;
+  }catch(e){}
+}
+function bump(kind, sound, custom){
+  unread[kind] = Math.min(99, (unread[kind]||0)+1);
+  paint();
+  if(sound){ play(sound); }
+  try{
+    if(document.hidden && sound){
+      var titles = {feed:"novo post no feed", pub:"nova mensagem no chat", priv:"nova mensagem privada", inv:"convite p/ privado", depo:"novo depoimento", mural:"novo recado no mural"};
+      var t = (custom && custom.title) || ("zunzum · " + (titles[kind] || "novidade"));
+      var b = (custom && custom.body) || (kind === "inv" ? "alguém te convidou p/ o privado — toque p/ abrir" : kind === "depo" ? "alguém deixou depoimento p/ você — toque p/ ver" : "toque p/ abrir o zunzum");
+      sysNotify(t, b, "zun-" + kind);
+    }
+  }catch(e){}
+}
+function clearKind(k){ unread[k]=0; paint(); }
+function clearAll(){ unread.feed=unread.pub=unread.priv=unread.inv=unread.depo=unread.mural=0; paint(); }
+function myNick(){
+  try{
+    var raw = null; try{ raw = sessionStorage.getItem("orkutSession")||localStorage.getItem("orkutSession"); }catch(e){ raw = null; }
+    var s = JSON.parse(raw||"null");
+    return (s && s.nick ? String(s.nick).toLowerCase() : "");
+  }catch(e){ return ""; }
+}
+function mentionsMe(text){
+  var n = myNick(); if(!n) return false;
+  return new RegExp("(^|\\s)@"+n+"\\b","i").test(String(text||""));
+}
+document.addEventListener("visibilitychange", function(){ if(!document.hidden){ BASE_TITLE = BASE_TITLE.replace(/^\(\d+\)\s*/,""); clearAll(); } });
+function seenStoreKey(kind){ return "zunzumSeen_"+kind; }
+function loadSeen(kind){
+  var s = {};
+  try{
+    var a = JSON.parse(localStorage.getItem(seenStoreKey(kind))||"null");
+    if(Array.isArray(a)) a.forEach(function(k){ if(typeof k==="string") s[k]=1; });
+  }catch(e){}
+  return s;
+}
+var seenSaveAt = {};
+function saveSeen(kind, seen){
+  try{
+    var now = Date.now();
+    if(seenSaveAt[kind] && now-seenSaveAt[kind]<5000) return;
+    seenSaveAt[kind] = now;
+    localStorage.setItem(seenStoreKey(kind), JSON.stringify(Object.keys(seen).slice(-300)));
+  }catch(e){}
+}
+function watch(id, kind, soundKind){
+  var el = document.getElementById(id);
+  if(!el || el._zunWatch) return;
+  el._zunWatch = true;
+  var pending = [];
+  var seen = loadSeen(kind), order = Object.keys(seen), primed = false;
+  function keyOf(n){
+    /* chave estável primeiro: id do post (feed) ou at|nick (chats).
+       Antes a chave era texto+"há X min" — o relativo do feed muda a cada
+       minuto e cada rebuild renotificava posts velhos + o botão "ver mais". */
+    try{
+      if(n.dataset){
+        if(n.dataset.pid) return "p:"+n.dataset.pid;
+        if(n.dataset.zk) return "z:"+n.dataset.zk;
+      }
+    }catch(e){}
+    var tm = "";
+    try{ var me2 = n.querySelector ? n.querySelector(".meta") : null; tm = me2 ? me2.textContent : ""; }catch(e){}
+    return ((n.textContent||"").slice(0,120)+"|"+tm).slice(0,200);
+  }
+  function remember(k){
+    if(seen[k]) return false;
+    seen[k] = 1; order.push(k);
+    if(order.length>600){ var old = order.shift(); try{ delete seen[old]; }catch(e){} }
+    saveSeen(kind, seen);
+    return true;
+  }
+  try{ Array.prototype.forEach.call(el.childNodes, function(n){ if(n.nodeType===1) remember(keyOf(n)); }); }catch(e){}
+  try{ localStorage.setItem(seenStoreKey(kind), JSON.stringify(Object.keys(seen).slice(-300))); }catch(e){}
+  var mo = new MutationObserver(function(muts){
+    muts.forEach(function(mu){
+      mu.addedNodes.forEach(function(n){
+        if(n.nodeType===1) pending.push(n);
+      });
+    });
+    if(!pending.length) return;
+    requestAnimationFrame(function(){
+      var nodes = pending.splice(0, pending.length);
+      if(!primed){
+        primed = true;
+        nodes.forEach(function(n){ remember(keyOf(n)); });
+        return;
+      }
+      var me = myNick();
+      nodes.forEach(function(n){
+        /* assunto do dia (post fixo do dia): nunca notifica — nem badge,
+           nem som, nem popup. Volta ANTES do remember: o "há X min" do
+           cabeçalho muda o texto a cada minuto e cada variante viraria uma
+           chave nova no seen (era isso que renotificava toda hora e ainda
+           expulsava posts reais do seen). */
+        if(kind==="feed"){
+          try{
+            if(n && n.dataset && n.dataset.topicPost) return;
+            var _tpid = ""; try{ _tpid = String((n.dataset&&n.dataset.pid)||""); }catch(_e){}
+            if(_tpid.indexOf("za-")===0) return;
+            if(String((n.textContent||"").slice(0,60)).indexOf("💬 assunto do dia")>=0) return;
+          }catch(_e){}
+        }
+        /* só msg de verdade notifica: botão "ver mais", fileira de entrada
+           e "enviando..." próprio nunca viram badge (o texto do botão muda
+           com a contagem e renotificava sozinho com o feed parado). */
+        try{
+          if(n.dataset && n.dataset.optid) return;
+          if(n.dataset && n.dataset.zunHidden) return;
+          if(n.style && n.style.display === "none") return;
+          if(kind === "feed" && !(n.classList && n.classList.contains("post"))) return;
+        }catch(_e2){}
+        var k = keyOf(n);
+        if(!remember(k)) return;
+        var txt = (n.textContent||"").slice(0,600);
+        var sender = "";
+        try{ var cn = n.querySelector ? n.querySelector(".chatname") : null; sender = cn ? cn.textContent.replace(/^@/,"").toLowerCase() : ""; }catch(e){}
+        if(me && sender && sender===me) return;
+        try{ var ZB = window.ZunBlock || null; if(ZB && ZB.hasAcc()){ var sn0 = String(sender||"").replace(/^@/,"").toLowerCase(); if(sn0 && ZB.blocked(sn0)){ try{ n.remove(); }catch(e){} return; } if(ZB.quiet(sn0)) return; } }catch(e){}
+        if(n.dataset && n.dataset.joinNick){
+          var jn = String(n.dataset.joinNick||"");
+          if(me && jn.toLowerCase()===me) return;
+          return;
+        }
+        var mine = false;
+        try{
+          if(me && new RegExp("@"+me+"\\b","i").test(txt) && n.querySelector && n.querySelector(".chatname") && n.querySelector(".chatname").textContent.toLowerCase().indexOf(me)>=0) mine = true;
+        }catch(e){}
+        if(mine) return;
+        if(kind==="pub"){
+          if(!notifOn("pub")) return;
+          if(mentionsMe(txt)){ bump("pub","mention"); buzz([50,40,50]); }
+          else if(document.hidden){ bump("pub","soft"); }
+          else {
+            var log = document.getElementById("pubLog");
+            if(log && (log.scrollHeight - log.scrollTop - log.clientHeight > 120)) bump("pub", null);
+          }
+        }else if(kind==="priv"){
+          if(!notifOn("priv")) return;
+          if(mentionsMe(txt)){
+            var from = sender ? "@"+sender : "alguém";
+            bump("priv","mention",{title:"zunzum · te mencionaram no privado",body:from+": "+txt.slice(0,120)});
+            buzz([50,40,50]);
+          } else {
+            bump("priv", document.hidden ? "priv" : "soft"); buzz([40]);
+          }
+        }else if(kind==="feed"){
+          if(!notifOn("feed")) return;
+          if(mentionsMe(txt)){ bump("feed","mention"); }
+          else if(document.hidden){ bump("feed","soft"); }
+          else bump("feed", null);
+        }
+      });
+    });
+  });
+  mo.observe(el, {childList:true});
+}
+function hook(name, fn){
+  try{
+    var prev = window[name];
+    if(typeof prev !== "function" || prev._zunHooked) return;
+    var w = function(){ try{ var a0 = String(arguments[0]||"").replace(/^@/,""); if(a0 && window.ZunBlock && window.ZunBlock.quiet(a0)) return; }catch(e){} try{ fn.apply(null, arguments); }catch(e){} return prev.apply(this, arguments); };
+    w._zunHooked = true;
+    window[name] = w;
+  }catch(e){}
+}
+hook("notifyDepo", function(from){ bump("depo","depo"); buzz([50,40,80]); });
+hook("notifyPrivJoin", function(nick){ var m = myNick(); if(m && String(nick||"").toLowerCase()===m) return; bump("priv","invite",{title:"zunzum · entrou no privado",body:"@"+String(nick||"").slice(0,20)+" entrou no privado pela primeira vez"}); buzz([60,50,60]); });
+hook("queuePrivReq", function(from, room){ bump("priv","invite",{title:"zunzum · pedido p/ entrar",body:"@"+String(from||"").slice(0,20)+" quer entrar na sua sala "+String(room||"").slice(0,30)}); buzz([60,50,60]); });
+hook("notifyPrivApproved", function(){ bump("priv","invite",{title:"zunzum · liberado!",body:"o dono aprovou sua entrada no privado — toque p/ abrir"}); buzz([60,50,60]); });
+hook("queuePrivInvite", function(){ bump("inv","invite"); buzz([60,50,60]); });
+hook("celebratePeak", function(){ play("peak"); });
+hook("paintInviteToast", function(){ bump("inv", null); });
+watch("pubLog","pub");
+watch("privLog","priv");
+watch("feedCtn","feed");
+[["pubInput","pub"],["privMsgInput","priv"],["feedCtn","feed"]].forEach(function(p){
+  var el = document.getElementById(p[0]);
+  if(!el) return;
+  el.addEventListener("focus", function(){ clearKind(p[1]); }, {passive:true});
+  el.addEventListener("pointerdown", function(){ clearKind(p[1]); }, {passive:true});
+});
+try{
+  var thMeta = document.createElement("meta"); thMeta.name = "theme-color"; thMeta.content = "#6aa5d7"; document.head.appendChild(thMeta);
+  var manLink = document.createElement("link"); manLink.rel = "manifest"; manLink.href = "src/manifest.webmanifest"; document.head.appendChild(manLink);
+    var appleIcon = document.createElement("link"); appleIcon.rel = "apple-touch-icon"; appleIcon.href = "https://user.uploads.dev/file/bfd49a053c47f44f2ca09310c1cc9ac7.png"; document.head.appendChild(appleIcon);
+    var awCap = document.createElement("meta"); awCap.name = "apple-mobile-web-app-capable"; awCap.content = "yes"; document.head.appendChild(awCap);
+    var awBar = document.createElement("meta"); awBar.name = "apple-mobile-web-app-status-bar-style"; awBar.content = "default"; document.head.appendChild(awBar);
+    var awTitle = document.createElement("meta"); awTitle.name = "apple-mobile-web-app-title"; awTitle.content = "zunzum"; document.head.appendChild(awTitle);
+  try{ if("serviceWorker" in navigator){ window.addEventListener("load", function(){ try{ navigator.serviceWorker.register("src/sw.js").catch(function(){}); }catch(e){} }); } }catch(e){}
+  window.addEventListener("beforeinstallprompt", function(e){
+    try{
+      e.preventDefault();
+      if(document.getElementById("zunInstallBtn") || !topBar) return;
+      var ib = document.createElement("button"); ib.id = "zunInstallBtn"; ib.textContent = "📲 instalar app";
+      ib.onclick = function(){ try{ e.prompt(); }catch(err){} };
+      topBar.appendChild(ib);
+    }catch(err){}
+  });
+}catch(e){}
+window.ZNotify = { bump:bump, play:play, clearAll:clearAll, clearKind:clearKind, showPop:showPop, total:total, kinds:function(){ try{ return {feed:unread.feed||0, pub:unread.pub||0, priv:unread.priv||0, inv:unread.inv||0, depo:unread.depo||0, mural:unread.mural||0}; }catch(e){ return {feed:0, pub:0, priv:0, inv:0, depo:0, mural:0}; } }, get muted(){ return !soundOn; }, isMobile: MOB };
+window.ZNotify.notifOn = notifOn; window.ZNotify.notifSet = notifSet;
+try{ ensureNotifToggles(); }catch(e){}
+try{ setInterval(function(){ ensureNotifToggles(); }, 3000); }catch(e){}
+paint();
+})();

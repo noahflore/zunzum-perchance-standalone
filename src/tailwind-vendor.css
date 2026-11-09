@@ -1,0 +1,14 @@
+/* tailwind-vendor.css — substituto estático do Play CDN (removido em 2026-10-28).
+   MOTIVO (segurança C3): o Play CDN (https://cdn.tailwindcss.com) era JS de
+   terceiro sem SRI/pin executado na origem do app — comprometimento do CDN =
+   XSS persistente global. Só 4 utilities eram usadas (só em #atalhosBox):
+   flex, flex-col, gap-2, flex-1. Este arquivo as congela como CSS estático.
+   ESTRATÉGIA DE SELETOR (mantida do CDN): `body .flex` — ganha da base por
+   especificidade, perde p/ noturno/festa/tema do site/inline do corretor
+   (mesmo contrato do `important:'body'` antigo, sem `!important`).
+   REGRA: área nova que precisar de utility nova, adicione aqui (não reimporte
+   o CDN). Ver src/LAYOUT.md. */
+body .flex{display:flex}
+body .flex-col{flex-direction:column}
+body .gap-2{gap:.5rem}
+body .flex-1{flex:1 1 0%}

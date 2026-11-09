@@ -1,0 +1,698 @@
+// zunzum abas — layout em abas no PC e no celular.
+// PC (>900px): barra superior com Feed/Chats/Conta/Mais (postar mora no Feed).
+// Wide (>=1400px): ganha a aba "Tudo" (▦) com multi-coluna; as demais seguem uma-de-cada-vez.
+// Celular (<=900px): barra inferior estilo app + sub-abas Público|Privado.
+// Move os .box existentes p/ páginas de abas uma única vez (sem restore);
+// trocar de largura só troca o estilo (body.zun-desk <-> body.zun-mobile).
+(function(){
+"use strict";
+var MQM = null;
+try{ MQM = matchMedia("(max-width:900px)"); }catch(e){ MQM = {matches:false, addEventListener:function(){}, addListener:function(){}}; }
+var LS_TAB = "zunzumMobTab", LS_CHAT = "zunzumMobChat";
+var active = false, activeMob = false, cur = "feed", built = false;
+var pagesEl = null, barEl = null, subNavEl = null;
+var fabEl = null;
+var saved = []; // {el, parent, next}
+var origSIV = null, origFocus = null;
+var lastWide = null; // p/ transição wide<->abas (aba "tudo" só entra/sai na virada)
+
+function lang(){
+  try{
+    var l = String(window.zunzumLang||"pt").slice(0,2).toLowerCase();
+    return (l==="en"||l==="es") ? l : "pt";
+  }catch(e){ return "pt"; }
+}
+function T(){
+  var l = lang();
+  if(l==="en") return {tudo:"All", feed:"Feed", chats:"Chats", conta:"Account", mais:"More", pub:"Public", priv:"Private"};
+  if(l==="es") return {tudo:"Todo", feed:"Feed", chats:"Chats", conta:"Cuenta", mais:"Más", pub:"Público", priv:"Privado"};
+  return {tudo:"Tudo", feed:"Feed", chats:"Chats", conta:"Conta", mais:"Mais", pub:"Público", priv:"Privado"};
+}
+function store(k, d){
+  try{ var v = localStorage.getItem(k); return v==null ? d : v; }catch(e){ return d; }
+}
+function storeSet(k, v){ try{ localStorage.setItem(k, v); }catch(e){} }
+
+function ensureCss(){
+  if(document.getElementById("zunMobileCss2")) return;
+  var c = document.createElement("style");
+  c.id = "zunMobileCss2";
+  c.textContent =
+  "body.zun-mobile{padding-bottom:calc(86px + env(safe-area-inset-bottom, 0px));}"
+  +"body.zun-mobile #top{position:sticky;top:0;z-index:44;padding:6px 8px;gap:8px;flex-wrap:nowrap;overflow:hidden;}"
+  +"body.zun-mobile #top .top-brand{flex:1 1 auto;min-width:0;}"
+  +"body.zun-mobile #top h1{font-size:16px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}"
+  +"body.zun-mobile #top .top-sub{display:none;}"
+  +"body.zun-mobile #top .top-desc{display:none;}"
+  +"body.zun-mobile #userCountEl{display:flex!important;flex:none;align-items:center;gap:3px;font-size:11px;white-space:nowrap;margin:0!important;opacity:1;color:#eaf3fb;}"
+  +"body.zun-mobile #userCountEl .uc-total{display:none;}"
+  +"body.zun-mobile #userCountEl .uc-rec{display:none;}"
+  +"#zunPeakLine{display:block;font-size:12px;font-weight:bold;margin:6px 0;padding:5px 12px;border-radius:20px;background:#fff3c4;border:2px solid #ffb300;color:#5a3c00;box-shadow:0 1px 5px #ffb30066;}"
++"body.zun-night #zunPeakLine{background:#3a2a00;border-color:#ffb300;color:#ffd968;box-shadow:0 1px 8px #000;}"
+  +"body.zun-mobile #top img{width:28px!important;height:28px!important;flex:none;}"
+  +"body.zun-mobile #topBtns{display:flex;gap:4px;flex:none;align-items:center;margin:0;flex-wrap:nowrap;}"
+  +"body.zun-mobile #top button{flex:none;font-size:14px;padding:6px 8px;min-height:34px;}"
+  +"body.zun-mobile #top .btn-txt{display:none;}"
+  +"body.zun-mobile #wrap{display:block;max-width:100%;padding:0 8px;margin:8px auto;}"
+  +"body.zun-mobile #seoBox{padding:0 8px;}"
+  +"#zunMPages section{display:none;}"
+  +"#zunMPages section.on{display:block;animation:zunFade .18s ease;}"
+  +"@keyframes zunFade{from{opacity:.4}to{opacity:1}}"
+  +"body.zun-mobile .box{padding:8px;margin-bottom:8px;}"
+  +"body.zun-mobile #feedCtn{max-height:68dvh;}"
+  +"body.zun-mobile .chatlog{max-height:52dvh;font-size:14px;}"
+  +"body.zun-mobile #textInput{min-height:70px;}"
+  +"body.zun-mobile #postBtn{min-height:44px;padding:8px 16px;}"
+  +"body.zun-mobile .fbar button{min-height:38px;min-width:38px;}"
+  +"body.zun-mobile .post img,body.zun-mobile .post video,body.zun-mobile .chatimg{max-width:100%;height:auto;}"
+  +"body.zun-mobile #pubGrid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));}"
+  +"#zunMBar{position:fixed;left:0;right:0;bottom:0;z-index:45;display:flex;gap:2px;background:#fff;border-top:1px solid #b6c9db;padding:6px 4px calc(6px + env(safe-area-inset-bottom, 0px));box-shadow:0 -2px 12px rgba(20,40,70,.12);}"
+  +"#zunMBar button{flex:1 1 0;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;line-height:1.1;color:#33507a;background:none;border:0;border-radius:10px;padding:7px 2px;min-height:54px;cursor:pointer;position:relative;}"
+  +"#zunMBar button .ic{font-size:21px;line-height:1;}"
+  +"#zunMBar button.on{background:#e8eef7;font-weight:bold;}"
+  +"#zunMBar .dot{position:absolute;top:6px;right:calc(50% - 20px);width:9px;height:9px;border-radius:50%;background:#d33;border:1px solid #fff;}"
+  +"#zunMSub{display:flex;gap:6px;margin-bottom:8px;}"
+  +"#zunMSub button{flex:1;min-height:40px;border:1px solid #b6c9db;background:#eef4fb;border-radius:10px;font-size:13px;cursor:pointer;}"
+  +"#zunMSub button.on{background:#33507a;color:#fff;border-color:#33507a;font-weight:bold;}"
+  // modais viram telas cheias no celular
+  +"body.zun-mobile #searchModal,body.zun-mobile #profModal,body.zun-mobile #divulgarModal,body.zun-mobile #notfoundModal{padding:0;}"
+  +"body.zun-mobile #searchCard,body.zun-mobile #profCard,body.zun-mobile #divulgarCard{max-width:100%;width:100%;min-height:100dvh;border-radius:0;}"
+  +"body.zun-mobile #notfoundModal .nfCard{max-width:100%;width:100%;min-height:100dvh;border-radius:0;}"
+  // espelho do modo noturno (notify.js) p/ páginas fora do #wrap
+  +"body.zun-mobile.zun-night #zunMPages .box{background:#1e1e30!important;color:#e8e8f2!important;border-color:#3a3a5c!important;}"
+  +"body.zun-mobile.zun-night #zunMPages .box h3{background:#2a2a45!important;color:#cfd2ff!important;}"
+  +"body.zun-mobile.zun-night #zunMPages input,body.zun-mobile.zun-night #zunMPages select,body.zun-mobile.zun-night #zunMPages textarea{background:#262640!important;color:#e8e8f2!important;border-color:#3a3a5c!important;}"
+  +"body.zun-mobile.zun-night #zunMPages .box button{background:#2a2a45!important;color:#e8e8f2!important;border-color:#3a3a5c!important;}"
+  +"body.zun-mobile.zun-night #zunMPages .chatname{color:#cfd2ff!important;}"
+  +"body.zun-mobile.zun-night #zunMPages .chatlog div{border-color:#333!important;}"
+  +"body.zun-mobile.zun-night #zunMBar{background:#1e1e30!important;border-color:#3a3a5c!important;}"
+  +"body.zun-mobile.zun-night #zunMBar button{color:#cfd2ff!important;}"
+  +"body.zun-mobile.zun-night #zunMBar button.on{background:#2a2a45!important;}"
+  +"body.zun-mobile.zun-night #zunMSub button{background:#2a2a45!important;color:#e8e8f2!important;border-color:#3a3a5c!important;}"
+  +"body.zun-mobile.zun-night #zunMSub button.on{background:#33507a!important;color:#fff!important;}"
+  +"body.zun-hide-dj #djBar{display:none!important;}";
+  document.head.appendChild(c);
+}
+
+// CSS das abas no PC (>900px): barra superior fixa + páginas centralizadas.
+// O CSS do celular (ensureCss) continua valendo; aqui só o que é do PC.
+function ensureDeskCss(){
+  if(document.getElementById("zunDeskCss")) return;
+  var c = document.createElement("style");
+  c.id = "zunDeskCss";
+  c.textContent =
+  "body.zun-tabs #wrap{display:block;max-width:1100px;padding:0 10px;margin:8px auto;}"
+  +"body.zun-tabs #seoBox{padding:0 10px;}"
+  +"body.zun-desk{padding-bottom:0;}"
+  +"body.zun-desk #zunMBar{position:sticky;top:0;z-index:44;display:flex;gap:6px;background:#fff;border-bottom:1px solid #b6c9db;padding:8px 10px;box-shadow:0 2px 10px rgba(20,40,70,.12);max-width:1100px;margin:0 auto;border-radius:0 0 12px 12px;}"
+  +"body.zun-desk #zunMBar button{flex:1 1 0;display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;color:#33507a;background:#eef4fb;border:1px solid #dbe7f5;border-radius:10px;padding:9px 6px;min-height:40px;cursor:pointer;}"
+  +"body.zun-desk #zunMBar button.on{background:#33507a;color:#fff;border-color:#33507a;font-weight:bold;}"
+  +"body.zun-desk #zunMBar button .ic{font-size:16px;}"
+  +"body.zun-desk #zunMPages{max-width:1100px;margin:0 auto;}"
+  +"body.zun-desk #zunMPages section[data-tab]{max-width:760px;margin:0 auto;}"
+  +"body.zun-desk #zunMPages section[data-tab].on{max-width:760px;}"
+  +"body.zun-desk #zunMPages section[data-tab='chats'].on{max-width:1100px;display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:10px;align-items:start;}"
+  +"body.zun-desk #zunMSub{display:none!important;}"
+  +"body.zun-desk.zun-night #zunMBar{background:#1e1e30!important;border-color:#3a3a5c!important;}"
+  +"body.zun-desk.zun-night #zunMBar button{background:#2a2a45!important;color:#cfd2ff!important;border-color:#3a3a5c!important;}"
+  +"body.zun-desk.zun-night #zunMBar button.on{background:#33507a!important;color:#fff!important;}"
+  +"body.zun-tabs.zun-night #zunMPages .box{background:#1e1e30!important;color:#e8e8f2!important;border-color:#3a3a5c!important;}"
+  +"body.zun-tabs.zun-night #zunMPages .box h3{background:#2a2a45!important;color:#cfd2ff!important;}"
+  +"body.zun-tabs.zun-night #zunMPages input,body.zun-tabs.zun-night #zunMPages select,body.zun-tabs.zun-night #zunMPages textarea{background:#262640!important;color:#e8e8f2!important;border-color:#3a3a5c!important;}"
+  +"body.zun-tabs.zun-night #zunMPages .box button{background:#2a2a45!important;color:#e8e8f2!important;border-color:#3a3a5c!important;}"
+  +"body.zun-tabs.zun-night #zunMPages .chatname{color:#cfd2ff!important;}"
+  +"body.zun-tabs.zun-night #zunMPages .chatlog div{border-color:#333!important;}";
+  document.head.appendChild(c);
+}
+
+// Multi-coluna desktop largo (>=1400px): side panels sempre visíveis.
+// 900-1399 mantém abas centradas (notebooks); <=900 é mobile.
+// Grade: esquerda conta+mais empilhados, centro feed, direita chats.
+function ensureWideCss(){
+  if(document.getElementById("zunWideCss")) return;
+  var c = document.createElement("style");
+  c.id = "zunWideCss";
+  c.textContent =
+  "body.zun-wide.zun-wide-all.zun-tabs #wrap{max-width:1400px;}"
+  +"body.zun-wide.zun-wide-all.zun-desk #zunMBar{max-width:1400px;}"
+  +"body.zun-tabs #zunMBar button[data-tab='tudo']{display:none;}"
+  +"body.zun-wide.zun-tabs #zunMBar button[data-tab='tudo']{display:flex;}"
+  +"body.zun-wide.zun-wide-all #zunMPages{max-width:1400px;display:grid;grid-template-columns:300px minmax(0,1fr) 380px;gap:10px;align-items:start;}"
+  +"body.zun-wide.zun-wide-all #zunMPages section{display:block!important;min-width:0;}"
+  +"body.zun-wide.zun-wide-all #zunMPages section[data-tab='conta']{grid-column:1;grid-row:1;}"
+  +"body.zun-wide.zun-wide-all #zunMPages section[data-tab='mais']{grid-column:1;grid-row:2;}"
+  +"body.zun-wide.zun-wide-all #zunMPages section[data-tab='feed']{grid-column:2;grid-row:1 / span 2;max-width:none!important;margin:0!important;}"
+  +"body.zun-wide.zun-wide-all #zunMPages section[data-tab='chats']{grid-column:3;grid-row:1 / span 2;display:block!important;max-width:none!important;margin:0!important;}"
+  +"body.zun-wide.zun-wide-all #zunMPages section[data-tab='chats'] .box{margin-bottom:10px;}"
+  +"body.zun-wide.zun-wide-all #zunMSub{display:none!important;}"
+  +"body.zun-wide.zun-wide-all #feedCtn{max-height:calc(100vh - 320px);min-height:300px;}"
+  +"body.zun-wide.zun-wide-all .chatlog{max-height:42vh;}";
+  document.head.appendChild(c);
+}
+var MQW = null;
+try{ MQW = matchMedia("(min-width:1400px)"); }catch(e){ MQW = null; }
+function isWide(){ try{ return !isMob() && MQW && !!MQW.matches; }catch(e){ return false; } }
+
+// Localiza os boxes sem depender de texto traduzido (por ids internos).
+function findBoxes(){
+  var wrap = document.getElementById("wrap");
+  if(!wrap) return null;
+  var cols = wrap.children;
+  if(cols.length < 3) return null;
+  function boxWith(id){
+    var el = document.getElementById(id);
+    if(!el) return null;
+    return el.closest ? el.closest(".box") : null;
+  }
+  var bUser = boxWith("authBox"), bPost = boxWith("postBtn"), bFeed = boxWith("feedCtn");
+  var bPub = document.getElementById("pubBox"), bPriv = boxWith("privLog");
+  var bMir = boxWith("mirBtn"), bSug = boxWith("sugBtn");
+  var bAtal = document.getElementById("atalhosBox"); // área nova Tailwind (opcional)
+  var bChama = document.getElementById("chamaBox"); // CTA convite no feed (opcional)
+  var bComo = document.getElementById("comoBox"); // como-funciona (opcional)
+  var bComoMini = document.getElementById("comoMiniBox"); // tidy 2026-10-30: como começar (opcional)
+  var bAmigos = document.getElementById("amigosBox"); // webring sites amigos T16 (opcional)
+  var bFr = document.getElementById("zunFriendPanel"); // amigos/DM (zundm, opcional: pode nascer depois)
+  var bSobre = document.getElementById("sobreBox"); // id direto: o painel amigos entra na col1 e quebrava a detecção por posição
+  var bSeo = document.querySelector("#seoBox .box");
+  if(!bUser||!bPost||!bFeed||!bPub||!bPriv||!bSobre) return null;
+  return {cols:[cols[0],cols[1],cols[2]], user:bUser, sobre:bSobre, mir:bMir, sug:bSug, atal:bAtal, chama:bChama, como:bComo, comoMini:bComoMini, amigos:bAmigos, fr:bFr,
+    post:bPost, feed:bFeed, pub:bPub, priv:bPriv, seo:bSeo, seoBox:document.getElementById("seoBox")};
+}
+
+function build(){
+  if(built) return true;
+  ensureCss();
+  ensureDeskCss();
+  ensureWideCss();
+  var B = findBoxes();
+  if(!B) return false;
+  var t = T();
+  // registra posição original (ordem de documento)
+  saved = [];
+  [B.user,B.sobre,B.mir,B.sug,B.post,B.feed,B.pub,B.priv].concat(B.seo?[B.seo]:[]).concat(B.atal?[B.atal]:[]).concat(B.fr?[B.fr]:[]).concat(B.chama?[B.chama]:[]).concat(B.como?[B.como]:[]).concat(B.comoMini?[B.comoMini]:[]).concat(B.amigos?[B.amigos]:[]).forEach(function(el){
+    if(el) saved.push({el:el, parent:el.parentNode, next:el.nextSibling});
+  });
+  // páginas (vazias — os boxes só são movidos no activate())
+  pagesEl = document.createElement("div");
+  pagesEl.id = "zunMPages";
+  ["feed","chats","conta","mais"].forEach(function(id){
+    var s = document.createElement("section");
+    s.dataset.tab = id;
+    pagesEl.appendChild(s);
+  });
+  // sub-abas Público|Privado dentro de chats
+  subNavEl = document.createElement("div");
+  subNavEl.id = "zunMSub";
+  var b1 = document.createElement("button"); b1.dataset.chat = "pub"; b1.textContent = t.pub;
+  var b2 = document.createElement("button"); b2.dataset.chat = "priv"; b2.textContent = t.priv;
+  b1.onclick = function(){ showChat("pub"); };
+  b2.onclick = function(){ showChat("priv"); };
+  subNavEl.appendChild(b1); subNavEl.appendChild(b2);
+  var chatSec = pagesEl.querySelector('section[data-tab="chats"]');
+  chatSec.insertBefore(subNavEl, chatSec.firstChild);
+  // barra inferior
+  barEl = document.createElement("nav");
+  barEl.id = "zunMBar";
+  [["tudo","▦",t.tudo],["feed","📰",t.feed],["chats","💬",t.chats],["conta","👤",t.conta],["mais","☰",t.mais]].forEach(function(d){
+    var b = document.createElement("button");
+    b.dataset.tab = d[0];
+    var ic = document.createElement("span"); ic.className = "ic"; ic.textContent = d[1];
+    var lb = document.createElement("span"); lb.textContent = d[2];
+    var dot = document.createElement("span"); dot.className = "dot"; dot.hidden = true;
+    b.appendChild(ic); b.appendChild(lb); b.appendChild(dot);
+    b.onclick = function(){ showTab(d[0]); };
+    barEl.appendChild(b);
+  });
+  // DJ na barra (5º botão no PC, 6º no celular): o flutuante cobria o "enviar".
+  // Nasce oculto no PC e no celular; o botão alterna (DJ / Fechar).
+  fabEl = document.createElement("button");
+  fabEl.id = "zunDjFab";
+  fabEl.title = "abrir dj ia";
+  var djIc = document.createElement("span"); djIc.className = "ic"; djIc.textContent = "🎵";
+  var djLb = document.createElement("span"); djLb.className = "lb"; djLb.textContent = "DJ";
+  fabEl.appendChild(djIc); fabEl.appendChild(djLb);
+  fabEl.onclick = function(){ djToggle(); };
+  barEl.appendChild(fabEl);
+  built = true;
+  return true;
+}
+
+function pageOf(node){
+  try{
+    var s = node.closest ? node.closest("#zunMPages section") : null;
+    return s ? s.dataset.tab : null;
+  }catch(e){ return null; }
+}
+function showChat(which){
+  storeSet(LS_CHAT, which);
+  /* visibilidade do DJ é dona do showTab (id==="chats"): sem o add aqui, que
+     escondia o DJ até na aba feed logo após o activate() */
+  try{
+    var mob = document.body.classList.contains("zun-mobile");
+    var btns = subNavEl.querySelectorAll("button");
+    btns.forEach(function(b){ b.classList.toggle("on", b.dataset.chat===which); });
+    var pub = document.getElementById("pubBox"), priv = null;
+    var pl = document.getElementById("privLog");
+    priv = pl ? pl.closest(".box") : null;
+    if(!mob){ if(pub) pub.hidden = false; if(priv) priv.hidden = false; }
+    else {
+      if(pub) pub.hidden = (which!=="pub");
+      if(priv) priv.hidden = (which!=="priv");
+    }
+    /* 1a visita: descarrega o fundo pendente (paint com aba oculta não fixa).
+       Retry tardio (350ms): o activate() move os boxes p/ a section e o move
+       zera o scrollTop DEPOIS do paint — o flush síncrono pode pegar layout
+       ainda instável, o tardio garante o fundo após o boot. */
+    try{ if(window.zunChatFlushBottom) window.zunChatFlushBottom(); }catch(e){}
+    try{ requestAnimationFrame(function(){ try{ if(window.zunChatFlushBottom) window.zunChatFlushBottom(); }catch(e){} }); }catch(e){}
+    try{ setTimeout(function(){ try{ if(window.zunChatFlushBottom) window.zunChatFlushBottom(); }catch(e){} }, 350); }catch(e){}
+  }catch(e){}
+}
+function showTab(id, silent){
+  var isTudo = (id === "tudo");
+  // "tudo" só existe em tela grande; fora dela cai na aba única padrão.
+  try{ if(isTudo && !isWide()){ isTudo = false; id = "feed"; } }catch(e){ isTudo = false; id = "feed"; }
+  try{ if(!isTudo && !pagesEl.querySelector('section[data-tab="'+id+'"]')) id = "feed"; }catch(e){ if(!isTudo) id = "feed"; }
+  cur = id;
+  if(!isTudo) storeSet(LS_TAB, id);
+  // O DJ é overlay: trocar de aba recolhe ele (botão 🎵 chama de volta).
+  try{ djHide(); }catch(e){}
+  try{
+    pagesEl.querySelectorAll("section").forEach(function(s){
+      s.classList.toggle("on", s.dataset.tab===id);
+    });
+    barEl.querySelectorAll("button").forEach(function(b){
+      b.classList.toggle("on", b.dataset.tab===id);
+    });
+    if(id==="chats") showChat(store(LS_CHAT, "pub"));
+  }catch(e){}
+  // Multi-coluna só na aba "tudo" (tela grande): as outras abas voltam a
+  // mostrar uma coisa de cada vez, como antes.
+  try{ document.body.classList.toggle("zun-wide-all", isTudo && isWide()); }catch(e){}
+  if(isTudo){ try{ showChat(store(LS_CHAT, "pub")); }catch(e){} }
+  if(!silent){ try{ window.scrollTo(0,0); }catch(e){} }
+}
+function djIsOpen(){
+  try{ return active && !document.body.classList.contains("zun-hide-dj"); }catch(e){ return false; }
+}
+function paintFab(){
+  try{
+    if(!fabEl) return;
+    var open = djIsOpen();
+    var ic = fabEl.querySelector(".ic"), lb = fabEl.querySelector(".lb");
+    if(ic) ic.textContent = open ? "✖" : "🎵";
+    if(lb) lb.textContent = open ? "Fechar" : "DJ";
+    fabEl.title = open ? "fechar dj ia" : "abrir dj ia";
+    if(fabEl.classList) fabEl.classList.toggle("on", open);
+  }catch(e){}
+}
+function djShow(){
+  try{ document.body.classList.remove("zun-hide-dj"); }catch(e){}
+  try{ var p = document.getElementById("djPanel"); if(p) p.hidden = false; }catch(e){}
+  paintFab();
+}
+function djHide(){
+  try{ document.body.classList.add("zun-hide-dj"); }catch(e){}
+  paintFab();
+}
+function djToggle(){ if(djIsOpen()) djHide(); else djShow(); }
+try{
+  window.zunDjShow = function(){ djShow(); };
+  window.zunDjHide = function(){ djHide(); };
+  window.zunDjToggle = function(){ djToggle(); };
+}catch(e){}
+function syncDots(){
+  /* só a aba dona da novidade acende (antes: qualquer não-lida acendia TODAS).
+     feed -> aba Feed; pub/priv/inv -> aba Chats; depo/mural/DM -> aba Conta. */
+  try{
+    var k = null;
+    try{ k = (window.ZNotify && typeof window.ZNotify.kinds==="function") ? window.ZNotify.kinds() : null; }catch(e){ k = null; }
+    if(!k){
+      var badge = document.getElementById("zunBadge");
+      var n = (badge && !badge.hidden) ? badge.textContent : "";
+      barEl.querySelectorAll("button").forEach(function(b){
+        var dot = b.querySelector(".dot");
+        if(!dot) return;
+        dot.hidden = !n;
+        dot.title = n ? (n+" não lidas") : "";
+      });
+      return;
+    }
+    var dm = 0;
+    try{ if(window.__zunDMUnreadTotal) dm = window.__zunDMUnreadTotal()||0; }catch(e){}
+    var map = {
+      feed: ((k.feed||0)>0),
+      chats: (((k.pub||0)+(k.priv||0)+(k.inv||0))>0),
+      conta: (((k.depo||0)+(k.mural||0)+dm)>0),
+      mais: false
+    };
+    var counts = {
+      feed: (k.feed||0),
+      chats: ((k.pub||0)+(k.priv||0)+(k.inv||0)),
+      conta: ((k.depo||0)+(k.mural||0)+dm),
+      mais: 0
+    };
+    barEl.querySelectorAll("button").forEach(function(b){
+      var dot = b.querySelector(".dot");
+      if(!dot) return;
+      var tab = (b.dataset && b.dataset.tab) || null;
+      var on = !!(tab && map[tab]);
+      dot.hidden = !on;
+      var n2 = (tab && counts[tab]) || 0;
+      dot.title = n2 ? (n2+" não lidas") : "";
+    });
+  }catch(e){}
+}
+var ucOrig = null;
+function dockUc(){
+  try{
+    var uc = document.getElementById("userCountEl");
+    var brand = document.querySelector("#top .top-brand");
+    if(!uc || !brand) return;
+    if(uc.parentNode === brand) return;
+    ucOrig = {parent:uc.parentNode, next:uc.nextSibling};
+    brand.appendChild(uc);
+  }catch(e){}
+}
+function undockUc(){
+  try{
+    var uc = document.getElementById("userCountEl");
+    if(!uc || !ucOrig) return;
+    if(ucOrig.next && ucOrig.next.parentNode===ucOrig.parent) ucOrig.parent.insertBefore(uc, ucOrig.next);
+    else ucOrig.parent.appendChild(uc);
+    ucOrig = null;
+  }catch(e){}
+}
+
+/* ---- ⋮ menu do topo (mobile): os botões do #topBtns viram 1 botão ⋮ e o
+   resto vai p/ um dropdown. Botão novo no futuro cai no ⋮ sozinho
+   (MutationObserver). Desktop intacto: ⋮ nem é criado fora do zun-mobile. */
+var topMenuBtn = null, topMenu = null, topOrder = null, topObs = null;
+function topMenuLang(){
+  try{
+    var l = String(window.zunzumLang||"pt").slice(0,2).toLowerCase();
+    if(l==="en") return "menu";
+    if(l==="es") return "menú";
+  }catch(e){}
+  return "menu";
+}
+function topMenuCss(){
+  if(document.getElementById("zunTopMenuCss")) return;
+  var c = document.createElement("style");
+  c.id = "zunTopMenuCss";
+  c.textContent =
+  "#topMenuBtn{display:none;min-width:42px;font-weight:bold;font-size:18px;line-height:1}"
+  +"body.zun-mobile #topMenuBtn{display:inline-block}"
+  +"#topMenu{position:fixed;right:8px;background:#fff;border:1px solid #b6c9db;border-radius:10px;box-shadow:0 8px 24px rgba(20,40,70,.25);z-index:46;min-width:200px;max-width:86vw;max-height:70vh;max-height:70dvh;overflow-y:auto;padding:6px;display:flex;flex-direction:column;gap:4px;box-sizing:border-box}"
+  +"#topMenu[hidden]{display:none!important}"
+  +"body:not(.zun-mobile) #topMenu{display:none!important}"
+  +"#topMenu button{justify-content:flex-start;text-align:left;background:#fff;border:1px solid #dbe7f5;border-radius:8px;padding:10px 12px;font-size:14px;min-height:44px;color:#33507a;cursor:pointer;display:flex;align-items:center}"
+  +"#topMenu button:hover{background:#eef4fb}"
+  +"body.zun-mobile #topMenu .btn-txt{display:inline!important;margin-left:6px}"
+  +"body.zun-night #topMenu{background:#23233a!important;border-color:#3a3a5c!important}"
+  +"body.zun-night #topMenu button{background:#2a2a45!important;color:#cfd2ff!important;border-color:#3a3a5c!important}";
+  document.head.appendChild(c);
+}
+function topMenuLabel(el){
+  // Botão sem .btn-txt (só ícone) ganha rótulo no menu a partir do title —
+  // genérico, vale p/ botão futuro. Removido no restore (desktop intacto).
+  if(!el || !el.tagName || el.tagName!=="BUTTON") return;
+  if(el.querySelector(".btn-txt")) return;
+  var t = "";
+  try{ t = String(el.title || el.getAttribute("aria-label") || "").trim(); }catch(e){}
+  if(!t) return;
+  var s = document.createElement("span");
+  s.className = "btn-txt"; s.setAttribute("data-zun-menu-lbl","1");
+  s.textContent = " " + t;
+  try{ el.appendChild(s); }catch(e){}
+}
+function topMenuUnlabel(el){
+  if(!el || !el.querySelectorAll) return;
+  Array.prototype.slice.call(el.querySelectorAll('[data-zun-menu-lbl]')).forEach(function(s){
+    try{ s.remove(); }catch(e){}
+  });
+}
+function topMenuOpen(){
+  if(!topMenu || !topMenuBtn) return;
+  topMenuCollect();
+  Array.prototype.slice.call(topMenu.children).forEach(topMenuLabel);
+  try{
+    // fixed na viewport (o #top tem overflow:hidden no mobile e cortava o menu):
+    // ancora embaixo do botão ⋮, com margem da tela.
+    var r = topMenuBtn.getBoundingClientRect();
+    var top = Math.round(r.bottom + 6);
+    var maxTop = Math.max(8, (window.innerHeight || 800) - 120);
+    if(top > maxTop) top = maxTop;
+    topMenu.style.top = top + "px";
+  }catch(e){}
+  topMenu.hidden = false;
+  try{ topMenuBtn.setAttribute("aria-expanded","true"); }catch(e){}
+}
+function topMenuClose(){
+  if(!topMenu || !topMenuBtn) return;
+  topMenu.hidden = true;
+  try{ topMenuBtn.setAttribute("aria-expanded","false"); }catch(e){}
+}
+function topMenuToggle(){
+  if(!topMenu) return;
+  if(topMenu.hidden) topMenuOpen();
+  else topMenuClose();
+}
+var ZUN_TOP_PIN = ["searchBtn","divulgarBtn","langBtn"]; // tidy 2026-10-30: ficam no topo; resto vai p/ o ⋮
+function topMenuCollect(){
+  if(!topMenu || !topMenuBtn) return;
+  try{ if(!document.body.classList.contains("zun-mobile")) return; }catch(e){}
+  var bar = document.getElementById("topBtns");
+  if(!bar) return;
+  if(!topOrder) topOrder = [];
+  Array.prototype.slice.call(bar.children).forEach(function(el){
+    if(el===topMenuBtn || el===topMenu) return;
+    if(!el.tagName || el.tagName!=="BUTTON") return;
+    if(ZUN_TOP_PIN.indexOf(el.id)>=0) return; // tidy: buscar/divulgar/EN ficam visíveis
+    if(topOrder.indexOf(el)===-1) topOrder.push(el);
+    try{ topMenu.appendChild(el); }catch(e){}
+    topMenuLabel(el);
+  });
+  topMenuBtn.hidden = false;
+}
+function topMenuRestore(){
+  var bar = document.getElementById("topBtns");
+  if(!bar || !topMenu) return;
+  (topOrder||[]).forEach(function(el){ try{ topMenuUnlabel(el); }catch(e){} try{ bar.insertBefore(el, topMenu); }catch(e){} });
+  Array.prototype.slice.call(topMenu.children).forEach(function(el){ try{ topMenuUnlabel(el); }catch(e){} try{ bar.insertBefore(el, topMenu); }catch(e){} });
+  try{ topMenuBtn.hidden = true; topMenuClose(); }catch(e){}
+  topOrder = null;
+}
+function topMenuBuild(){
+  if(topMenuBtn) return;
+  var bar = document.getElementById("topBtns");
+  if(!bar) return;
+  topMenuCss();
+  topMenuBtn = document.createElement("button");
+  topMenuBtn.id = "topMenuBtn"; topMenuBtn.type = "button";
+  topMenuBtn.textContent = "⋮";
+  topMenuBtn.title = topMenuLang();
+  topMenuBtn.setAttribute("aria-label", topMenuLang());
+  topMenuBtn.setAttribute("aria-haspopup","menu");
+  topMenuBtn.setAttribute("aria-expanded","false");
+  topMenuBtn.hidden = true;
+  topMenuBtn.onclick = function(ev){ try{ if(ev) ev.stopPropagation(); }catch(e){} topMenuToggle(); };
+  topMenu = document.createElement("div");
+  topMenu.id = "topMenu"; topMenu.hidden = true;
+  topMenu.setAttribute("role","menu");
+  bar.insertBefore(topMenuBtn, bar.firstChild);
+  bar.appendChild(topMenu);
+  topMenu.addEventListener("click", function(){ setTimeout(topMenuClose, 0); });
+  document.addEventListener("click", function(ev){
+    try{
+      if(!topMenu || topMenu.hidden) return;
+      if(topMenu.contains(ev.target) || (topMenuBtn && topMenuBtn.contains(ev.target))) return;
+      topMenuClose();
+    }catch(e){}
+  }, true);
+  document.addEventListener("keydown", function(ev){ if(ev && ev.key==="Escape") topMenuClose(); });
+  try{
+    topObs = new MutationObserver(function(){ try{ if(active && document.body.classList.contains("zun-mobile")) topMenuCollect(); }catch(e){} });
+    topObs.observe(bar, {childList:true});
+  }catch(e){ topObs = null; }
+  try{
+    window.zunTopMenuOpen = function(){ topMenuCollect(); topMenuOpen(); };
+    window.zunTopMenuClose = function(){ topMenuClose(); };
+  }catch(e){}
+}
+
+function isMob(){ try{ return !!MQM.matches; }catch(e){ return false; } }
+function placeBar(){
+  try{
+    var top = document.getElementById("top");
+    if(isMob()){ document.body.appendChild(barEl); }
+    else if(top && top.parentNode && top.after){ top.after(barEl); }
+    else if(top && top.parentNode){ top.parentNode.insertBefore(barEl, top.nextSibling); }
+    else { document.body.insertBefore(barEl, document.body.firstChild); }
+  }catch(e){ try{ document.body.appendChild(barEl); }catch(e2){} }
+}
+function paintMode(){
+  var mob = isMob();
+  activeMob = mob;
+  var nowWide = false;
+  try{ nowWide = !mob && isWide(); }catch(e){ nowWide = false; }
+  var wasWide = lastWide;
+  lastWide = nowWide;
+  try{
+    document.body.classList.add("zun-tabs");
+    document.body.classList.toggle("zun-mobile", mob);
+    document.body.classList.toggle("zun-desk", !mob);
+    try{ document.body.classList.toggle("zun-wide", nowWide); }catch(e){}
+    // DJ nasce oculto no PC e no celular (overlay atrapalha o conteúdo).
+    try{ document.body.classList.add("zun-hide-dj"); }catch(e){}
+  }catch(e){}
+  try{ if(mob){ topMenuBuild(); topMenuCollect(); } else { topMenuRestore(); } }catch(e){}
+  try{ if(mob) dockUc(); else undockUc(); }catch(e){}
+  try{ paintFab(); }catch(e){}
+  try{ placeBar(); }catch(e){}
+  try{ if(cur==="chats") showChat(store(LS_CHAT, "pub")); }catch(e){}
+  // Transição de largura: entrou no wide → aba "tudo" (multi-coluna); saiu do
+  // wide estando no "tudo" → volta p/ a aba única salva. Sem isso o resize
+  // deixava o grid ligado na aba errada (ou vice-versa).
+  try{
+    if(active && built && wasWide!==null && wasWide!==nowWide){
+      if(nowWide) showTab("tudo", true);
+      else if(cur==="tudo") showTab(store(LS_TAB, "feed"), true);
+    }else{
+      try{ document.body.classList.toggle("zun-wide-all", cur==="tudo" && nowWide); }catch(e){}
+    }
+  }catch(e){}
+  try{ paintNightMirror(); }catch(e){}
+}
+
+function activate(){
+  if(active) return;
+  if(!built && !build()) return;
+  var B = findBoxes();
+  if(!B) return; // boxes fora do lugar — não mexe em nada
+  active = true;
+  // DJ oculto por padrão (PC + celular): só aparece via botão DJ.
+  try{ document.body.classList.add("zun-hide-dj"); }catch(e){}
+  // Botão DJ já vai na barra (build): aqui só garante estado inicial.
+  try{ paintFab(); }catch(e){}
+  try{
+    var secs = {};
+    pagesEl.querySelectorAll("section").forEach(function(s){ secs[s.dataset.tab] = s; });
+    function mv(el, tab, before){
+      if(!el) return;
+      var s = secs[tab];
+      if(before && s.firstChild) s.insertBefore(el, s.firstChild);
+      else s.appendChild(el);
+    }
+    if(B.comoMini) mv(B.comoMini,"feed",true); mv(B.post,"feed"); if(B.chama) mv(B.chama,"feed"); mv(B.feed,"feed"); mv(B.pub,"chats"); mv(B.priv,"chats");
+    mv(B.user,"conta");
+    if(B.fr) mv(B.fr,"conta"); // amigos junto da conta (se nasceu depois, o zundm já põe lá sozinho)
+    mv(B.sobre,"mais"); mv(B.mir,"mais"); mv(B.sug,"mais"); if(B.como) mv(B.como,"mais"); if(B.amigos) mv(B.amigos,"mais");
+    if(B.seo) mv(B.seo,"mais");
+    if(B.atal) mv(B.atal,"mais");
+    // subnav volta p/ topo do chats
+    var cs = secs.chats;
+    cs.insertBefore(subNavEl, cs.firstChild);
+    B.cols.forEach(function(c){ c.hidden = true; });
+    if(B.seoBox) B.seoBox.hidden = true;
+    document.getElementById("wrap").appendChild(pagesEl);
+    paintMode();
+  }catch(e){ active = false; return; }
+  // intercepta scroll/focus p/ abrir a aba certa (ex: notificações)
+  if(!origSIV){
+    origSIV = Element.prototype.scrollIntoView;
+    Element.prototype.scrollIntoView = function(){
+      try{
+        var allModeSIV = false;
+        try{ allModeSIV = document.body.classList.contains("zun-wide-all"); }catch(e){}
+        // No modo "tudo" tudo já está visível: trocar de aba aqui colapsaria o grid.
+        if(active && !allModeSIV){
+          var pg = pageOf(this);
+          if(pg && pg!==cur) showTab(pg, true);
+          if(pg==="chats"){
+            var pb = document.getElementById("pubBox");
+            if(pb && (this===pb || pb.contains(this))) showChat("pub");
+            var pl = document.getElementById("privLog");
+            if(pl && (this===pl || pl.contains(this) || (this.closest&&this.closest(".box")&&this.closest(".box").contains(pl)))) showChat("priv");
+          }
+        }
+      }catch(e){}
+      return origSIV.apply(this, arguments);
+    };
+  }
+  if(!origFocus){
+    origFocus = HTMLElement.prototype.focus;
+    HTMLElement.prototype.focus = function(){
+      try{
+        var allModeFoc = false;
+        try{ allModeFoc = document.body.classList.contains("zun-wide-all"); }catch(e){}
+        // No modo "tudo" tudo já está visível: trocar de aba aqui colapsaria o grid.
+        if(active && !allModeFoc){
+          var pg = pageOf(this);
+          if(pg && pg!==cur) showTab(pg, true);
+        }
+      }catch(e){}
+      return origFocus.apply(this, arguments);
+    };
+  }
+  // Tela larga abre direto no "tudo" (multi-coluna); senão, na aba única salva.
+  showTab(isWide() ? "tudo" : store(LS_TAB, "feed"), true);
+  showChat(store(LS_CHAT, "pub"));
+  // espelha badge de não-lidas nas abas
+  try{
+    var badge = document.getElementById("zunBadge");
+    if(badge && !badge._zunMobObs){
+      badge._zunMobObs = true;
+      new MutationObserver(syncDots).observe(badge, {attributes:true, childList:true, characterData:true, subtree:true});
+    }
+  }catch(e){}
+  syncDots();
+  try{ paintNightMirror(); }catch(e){}
+}
+function deactivate(){
+  if(!active) return;
+  active = false;
+  try{ document.body.classList.remove("zun-mobile"); }catch(e){}
+  try{ document.body.classList.remove("zun-hide-dj"); }catch(e){}
+  try{ undockUc(); }catch(e){}
+  try{ topMenuRestore(); }catch(e){}
+  try{ if(barEl && barEl.parentNode) barEl.parentNode.removeChild(barEl); }catch(e){}
+  try{ if(pagesEl && pagesEl.parentNode) pagesEl.parentNode.removeChild(pagesEl); }catch(e){}
+  // devolve boxes à posição original
+  try{
+    saved.forEach(function(r){
+      if(!r.el) return;
+      if(r.next && r.next.parentNode===r.parent) r.parent.insertBefore(r.el, r.next);
+      else r.parent.appendChild(r.el);
+    });
+    saved.forEach(function(r){
+      try{ if(r.el.hasAttribute("hidden") && (r.el.id==="pubBox" || (r.el.querySelector&&r.el.querySelector("#privLog")))) r.el.hidden = false; }catch(e){}
+    });
+    var B = findBoxes();
+    if(B){ B.cols.forEach(function(c){ c.hidden = false; }); if(B.seoBox) B.seoBox.hidden = false; }
+  }catch(e){}
+}
+
+// espelha estado do modo noturno p/ CSS própria
+function paintNightMirror(){
+  try{ document.body.classList.toggle("zun-night", !!document.getElementById("zunNightCss")); }catch(e){}
+}
+try{
+  new MutationObserver(paintNightMirror).observe(document.head, {childList:true});
+}catch(e){}
+try{ paintNightMirror(); }catch(e){}
+
+function onChange(){
+  try{ if(!active) activate(); else { paintMode(); if(cur==="chats") showChat(store(LS_CHAT, "pub")); } }catch(e){}
+}
+try{
+  if(MQM.addEventListener) MQM.addEventListener("change", onChange);
+  else if(MQM.addListener) MQM.addListener(onChange);
+  if(MQW && MQW.addEventListener) MQW.addEventListener("change", onChange);
+  else if(MQW && MQW.addListener) MQW.addListener(onChange);
+}catch(e){}
+if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", onChange);
+else onChange();
+try{ window.zunMobileGo = function(t){ try{ if(active) showTab(t||"feed"); }catch(e){} }; }catch(e){}
+})();
